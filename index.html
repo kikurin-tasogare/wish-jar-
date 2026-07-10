@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
+  <meta name="theme-color" content="#FFF8F0">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <title>Wish Jar</title>
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icons/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="icons/icon-180.png">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- ═══════════ オンボーディング（初回のみ） ═══════════ -->
+  <section id="onboarding" class="screen hidden">
+    <div class="onboarding-inner">
+      <div class="onboarding-jar" id="onboarding-jar"></div>
+      <h1 class="onboarding-title">Wish Jar</h1>
+      <p class="onboarding-sub">ふたりの「行きたい・やりたい」を<br>集めるびんです</p>
+      <label class="field-label" for="onboarding-name">あなたの名前</label>
+      <div class="name-presets" id="name-presets"></div>
+      <input id="onboarding-name" class="text-input" type="text"
+             placeholder="なまえを入力" maxlength="10" autocomplete="off">
+      <button id="onboarding-start" class="primary-btn" disabled>はじめる</button>
+    </div>
+  </section>
+
+  <!-- ═══════════ メイン画面（ホーム） ═══════════ -->
+  <section id="home" class="screen hidden">
+    <header class="app-header">
+      <h1 class="app-title">Wish Jar</h1>
+      <button id="settings-btn" class="icon-btn" aria-label="設定">👤</button>
+    </header>
+    <div class="home-actions">
+      <button id="add-btn" class="pill-btn pill-btn--add">＋ 追加</button>
+      <button id="jar-btn" class="pill-btn pill-btn--jar">🫙 Wish Jar</button>
+    </div>
+    <div id="wish-list" class="wish-list" role="list"></div>
+    <div id="empty-home" class="empty-note hidden">
+      <div class="empty-art" id="empty-art"></div>
+      <p>まだ何もないよ。<br>「＋ 追加」からやりたいことを入れてね</p>
+    </div>
+  </section>
+
+  <!-- ═══════════ 新規追加モーダル ═══════════ -->
+  <div id="add-modal" class="modal hidden" role="dialog" aria-modal="true">
+    <div class="modal-card">
+      <div class="modal-head">
+        <h2 class="modal-title">＋ やりたいことを追加</h2>
+        <button class="icon-btn modal-close" data-close="add-modal" aria-label="閉じる">✕</button>
+      </div>
+      <input id="add-input" class="text-input text-input--big" type="text"
+             placeholder="例：渋谷に行きたい" maxlength="60" autocomplete="off">
+      <div class="add-mascot" id="add-mascot"></div>
+      <button id="add-submit" class="primary-btn">追加する</button>
+      <div id="add-toast" class="add-toast hidden">追加したよ 🎉</div>
+    </div>
+  </div>
+
+  <!-- ═══════════ 詳細・編集モーダル ═══════════ -->
+  <div id="detail-modal" class="modal hidden" role="dialog" aria-modal="true">
+    <div class="modal-card">
+      <div class="modal-head">
+        <h2 class="modal-title" id="detail-title">詳細</h2>
+        <button class="icon-btn modal-close" data-close="detail-modal" aria-label="閉じる">✕</button>
+      </div>
+      <label class="field-label" for="detail-place">📍 場所</label>
+      <input id="detail-place" class="text-input" type="text"
+             placeholder="例：渋谷駅" maxlength="40" autocomplete="off">
+      <label class="field-label" for="detail-date">🗓️ 日付</label>
+      <input id="detail-date" class="text-input" type="date">
+      <label class="field-label" for="detail-time">⏰ 時間</label>
+      <input id="detail-time" class="text-input" type="time">
+      <p class="autosave-note" id="autosave-note">じどうで保存されるよ</p>
+      <div class="detail-mascot" id="detail-mascot"></div>
+    </div>
+  </div>
+
+  <!-- ═══════════ 長押しアクションシート ═══════════ -->
+  <div id="action-sheet" class="modal hidden" role="dialog" aria-modal="true">
+    <div class="sheet-card">
+      <p class="sheet-title" id="sheet-title"></p>
+      <button id="sheet-done" class="primary-btn">🫙 完了して Wish Jar へ</button>
+      <button id="sheet-delete" class="ghost-btn ghost-btn--danger">削除する</button>
+      <button class="ghost-btn modal-close" data-close="action-sheet">キャンセル</button>
+    </div>
+  </div>
+
+  <!-- ═══════════ Wish Jar（思い出）画面 ═══════════ -->
+  <section id="jar" class="screen hidden">
+    <header class="app-header">
+      <button id="jar-back" class="pill-btn">← 戻る</button>
+      <h1 class="app-title app-title--jar">🫙 Wish Jar</h1>
+    </header>
+    <div class="cal-head">
+      <button id="cal-prev" class="icon-btn" aria-label="前の月">◀</button>
+      <div id="cal-label" class="cal-label"></div>
+      <button id="cal-next" class="icon-btn" aria-label="次の月">▶</button>
+    </div>
+    <div class="cal-grid cal-grid--dow">
+      <div>日</div><div>月</div><div>火</div><div>水</div><div>木</div><div>金</div><div>土</div>
+    </div>
+    <div id="cal-grid" class="cal-grid"></div>
+    <div class="jar-divider"></div>
+    <h2 id="jar-day-label" class="jar-day-label"></h2>
+    <div id="jar-day-items" class="jar-day-items"></div>
+  </section>
+
+  <!-- ═══════════ 設定モーダル ═══════════ -->
+  <div id="settings-modal" class="modal hidden" role="dialog" aria-modal="true">
+    <div class="modal-card">
+      <div class="modal-head">
+        <h2 class="modal-title">👤 設定</h2>
+        <button class="icon-btn modal-close" data-close="settings-modal" aria-label="閉じる">✕</button>
+      </div>
+      <label class="field-label" for="settings-name">あなたの名前</label>
+      <input id="settings-name" class="text-input" type="text" maxlength="10" autocomplete="off">
+      <p class="autosave-note" id="sync-status"></p>
+    </div>
+  </div>
+
+  <!-- 写真ライトボックス -->
+  <div id="lightbox" class="lightbox hidden"><img id="lightbox-img" alt="思い出の写真"></div>
+
+  <input type="file" id="photo-input" accept="image/*" multiple hidden>
+
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>

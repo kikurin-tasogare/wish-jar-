@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "wish-jar",
+      "runtimeExecutable": "python3",
+      "runtimeArgs": ["/private/tmp/claude-501/-Users-yuyakikuchi-Documents-wish-jar/b3b17d8f-92e5-45ff-9e36-c81efb14f1a6/scratchpad/preview/serve.py"],
+      "port": 8899
+    }
+  ]
+}

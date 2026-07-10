@@ -1,0 +1,18 @@
+{
+  "name": "Wish Jar",
+  "short_name": "Wish Jar",
+  "description": "ふたりの「行きたい・やりたい」を集めるびん",
+  "lang": "ja",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#FFF8F0",
+  "theme_color": "#FFF8F0",
+  "icons": [
+    {
+      "src": "icons/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}
