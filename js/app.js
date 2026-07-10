@@ -61,24 +61,9 @@ function showScreen(id) {
 function setupOnboarding() {
   const input = $('onboarding-name');
   const start = $('onboarding-start');
-  const presets = $('name-presets');
-
-  ['ゆうき', 'きくりん'].forEach(name => {
-    const btn = document.createElement('button');
-    btn.className = 'name-preset';
-    btn.textContent = name;
-    btn.addEventListener('click', () => {
-      input.value = name;
-      [...presets.children].forEach(c => c.classList.toggle('selected', c === btn));
-      start.disabled = false;
-    });
-    presets.appendChild(btn);
-  });
 
   input.addEventListener('input', () => {
     start.disabled = input.value.trim() === '';
-    [...presets.children].forEach(c =>
-      c.classList.toggle('selected', c.textContent === input.value.trim()));
   });
 
   start.addEventListener('click', () => {

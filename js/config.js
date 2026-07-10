@@ -32,6 +32,6 @@ export const FIREBASE_CONFIG = {
 };
 
 // ふたりで同じ合言葉にすると、同じ「びん」を共有できます
-export const JAR_CODE = 'yuki-and-me';
+export const JAR_CODE = 'our-wish-jar';
 
 export const SYNC_ENABLED = FIREBASE_CONFIG.apiKey !== '';
