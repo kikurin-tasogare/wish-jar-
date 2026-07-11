@@ -5,11 +5,11 @@
 // 　 アプリ本体はオフラインで完全動作する）
 // ═══════════════════════════════════════════
 
-import { FIREBASE_CONFIG, JAR_CODE } from './config.js';
+import { FIREBASE_CONFIG } from './config.js';
 
 const SDK = 'https://www.gstatic.com/firebasejs/10.12.2';
 
-export async function createSync(onRemoteChange) {
+export async function createSync(jarCode, onRemoteChange) {
   const { initializeApp } = await import(`${SDK}/firebase-app.js`);
   const { getAuth, signInAnonymously } = await import(`${SDK}/firebase-auth.js`);
   const {
@@ -20,7 +20,7 @@ export async function createSync(onRemoteChange) {
   await signInAnonymously(getAuth(app));
 
   const db = getFirestore(app);
-  const itemsCol = collection(db, 'jars', JAR_CODE, 'items');
+  const itemsCol = collection(db, 'jars', jarCode, 'items');
 
   onSnapshot(itemsCol, (snap) => {
     const remoteItems = snap.docs.map(d => d.data());

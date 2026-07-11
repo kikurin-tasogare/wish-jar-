@@ -153,7 +153,7 @@ export function saveProfile(profile) {
 
 // ─── 同期の初期化 ───
 
-export async function initStore() {
+export function initStore() {
   loadLocal();
 
   // 別タブ・別ウィンドウとの同期（ローカルモードでも動く）
@@ -164,37 +164,39 @@ export async function initStore() {
     const remoteIds = items.filter(i => !before.has(i.id)).map(i => i.id);
     notify(remoteIds);
   });
+}
 
-  if (SYNC_ENABLED) {
-    try {
-      const mod = await import('./firebase-sync.js');
-      sync = await mod.createSync((remoteItems) => {
-        // リモートの変更をローカルへマージ（新しい updatedAt が勝つ）
-        const before = new Set(items.map(i => i.id));
-        const newIds = [];
-        remoteItems.forEach(r => {
-          const local = items.find(i => i.id === r.id);
-          if (!local) {
-            items.push(r);
-            if (!before.has(r.id)) newIds.push(r.id);
-          } else if ((r.updatedAt ?? 0) > (local.updatedAt ?? 0)) {
-            Object.assign(local, r);
-          }
-        });
-        // リモートで削除されたものを反映
-        const remoteIdSet = new Set(remoteItems.map(r => r.id));
-        items = items.filter(i => remoteIdSet.has(i.id) || !i.syncedOnce);
-        items.forEach(i => { if (remoteIdSet.has(i.id)) i.syncedOnce = true; });
-        saveLocal();
-        notify(newIds);
+// あいことば（jarCode）が判明してから呼ぶ。ふたりの「びん」をつなぐ
+export async function startSync(jarCode) {
+  if (!SYNC_ENABLED || !jarCode) return { mode: 'local' };
+
+  try {
+    const mod = await import('./firebase-sync.js');
+    sync = await mod.createSync(jarCode, (remoteItems) => {
+      // リモートの変更をローカルへマージ（新しい updatedAt が勝つ）
+      const before = new Set(items.map(i => i.id));
+      const newIds = [];
+      remoteItems.forEach(r => {
+        const local = items.find(i => i.id === r.id);
+        if (!local) {
+          items.push(r);
+          if (!before.has(r.id)) newIds.push(r.id);
+        } else if ((r.updatedAt ?? 0) > (local.updatedAt ?? 0)) {
+          Object.assign(local, r);
+        }
       });
-      // 手元のデータを一度アップロード
-      items.forEach(i => sync.push(i));
-      return { mode: 'firebase' };
-    } catch (e) {
-      console.error('同期の初期化に失敗。ローカルモードで動きます', e);
-      return { mode: 'local', error: e };
-    }
+      // リモートで削除されたものを反映
+      const remoteIdSet = new Set(remoteItems.map(r => r.id));
+      items = items.filter(i => remoteIdSet.has(i.id) || !i.syncedOnce);
+      items.forEach(i => { if (remoteIdSet.has(i.id)) i.syncedOnce = true; });
+      saveLocal();
+      notify(newIds);
+    });
+    // 手元のデータを一度アップロード
+    items.forEach(i => sync.push(i));
+    return { mode: 'firebase' };
+  } catch (e) {
+    console.error('同期の初期化に失敗。ローカルモードで動きます', e);
+    return { mode: 'local', error: e };
   }
-  return { mode: 'local' };
 }

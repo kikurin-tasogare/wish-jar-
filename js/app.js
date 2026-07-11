@@ -3,7 +3,7 @@
 // ═══════════════════════════════════════════
 
 import {
-  initStore, onChange, getItems, getWishes, getMemories, getItem,
+  initStore, startSync, onChange, getItems, getWishes, getMemories, getItem,
   addItem, updateItem, completeItem, deleteItem, reorderWishes, addPhoto,
   getProfile, saveProfile,
 } from './store.js';
@@ -23,16 +23,12 @@ let calSelected = null;    // 選択中の日付（YYYY-MM-DD）
 
 async function main() {
   profile = getProfile();
-  const { mode } = await initStore();
+  initStore();
 
   onChange((_, remoteIds) => {
     renderHome(remoteIds);
     if (!$('jar').classList.contains('hidden')) renderCalendar();
   });
-
-  $('sync-status').textContent = SYNC_ENABLED && mode === 'firebase'
-    ? '☁️ ふたりでリアルタイム共有中'
-    : '📱 この端末に保存中（共有設定は README を見てね）';
 
   setupOnboarding();
   setupCover();
@@ -47,10 +43,19 @@ async function main() {
   if (profile) {
     renderHome();
     openCover();
+    const { mode } = await startSync(profile.jarCode);
+    updateSyncStatus(mode);
   } else {
+    updateSyncStatus('local');
     $('onboarding-jar').innerHTML = JAR_SVG;
     showScreen('onboarding');
   }
+}
+
+function updateSyncStatus(mode) {
+  $('sync-status').textContent = SYNC_ENABLED && mode === 'firebase'
+    ? '☁️ ふたりでリアルタイム共有中'
+    : '📱 この端末に保存中';
 }
 
 function showScreen(id) {
@@ -61,19 +66,25 @@ function showScreen(id) {
 
 function setupOnboarding() {
   const input = $('onboarding-name');
+  const jarcodeInput = $('onboarding-jarcode');
   const start = $('onboarding-start');
 
-  input.addEventListener('input', () => {
-    start.disabled = input.value.trim() === '';
-  });
+  const checkReady = () => {
+    start.disabled = input.value.trim() === '' || jarcodeInput.value.trim() === '';
+  };
+  input.addEventListener('input', checkReady);
+  jarcodeInput.addEventListener('input', checkReady);
 
-  start.addEventListener('click', () => {
+  start.addEventListener('click', async () => {
     const name = input.value.trim();
-    if (!name) return;
-    profile = { name };
+    const jarCode = jarcodeInput.value.trim();
+    if (!name || !jarCode) return;
+    profile = { name, jarCode };
     saveProfile(profile);
     renderHome();
     openCover();
+    const { mode } = await startSync(profile.jarCode);
+    updateSyncStatus(mode);
   });
 }
 

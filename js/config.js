@@ -9,7 +9,8 @@
 //   2. 「ウェブアプリを追加」して firebaseConfig をここに貼り付け
 //   3. Firestore Database を有効化（本番モード + 下記ルール）
 //   4. Authentication で「匿名ログイン」を有効化
-//   5. jarCode をふたりで同じ合言葉にする
+//   5. あいことば（jarCode）はアプリの初回起動画面で入力する
+//      （ふたりで同じあいことばを入れると同じ「びん」につながる）
 //
 //   Firestore セキュリティルール（コンソールに貼り付け）:
 //     rules_version = '2';
@@ -23,15 +24,12 @@
 // ═══════════════════════════════════════════
 
 export const FIREBASE_CONFIG = {
-  apiKey: '',            // ← ここに貼り付け（空ならローカルモード）
-  authDomain: '',
-  projectId: '',
-  storageBucket: '',
-  messagingSenderId: '',
-  appId: '',
+  apiKey: 'AIzaSyCkBdRPZcgfCJ60FnGevOHckNtk_cDZdRE',
+  authDomain: 'wish-jar-fbf98.firebaseapp.com',
+  projectId: 'wish-jar-fbf98',
+  storageBucket: 'wish-jar-fbf98.firebasestorage.app',
+  messagingSenderId: '484976961978',
+  appId: '1:484976961978:web:c311320f5b40cc64f31583',
 };
-
-// ふたりで同じ合言葉にすると、同じ「びん」を共有できます
-export const JAR_CODE = 'our-wish-jar';
 
 export const SYNC_ENABLED = FIREBASE_CONFIG.apiKey !== '';
