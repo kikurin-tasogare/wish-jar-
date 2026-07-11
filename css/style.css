@@ -176,6 +176,13 @@ html, body {
 }
 .autosave-note.saved { color: #6FBF8F; font-weight: bold; }
 
+.field-error {
+  font-size: 12px;
+  color: #D8556A;
+  margin-top: 6px;
+}
+.field-error.hidden { display: none; }
+
 /* ─── ふたりの列（左：自分 / 右：相手） ─── */
 .wish-columns {
   display: grid;

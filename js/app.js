@@ -64,13 +64,28 @@ function showScreen(id) {
 
 // ═══════════ オンボーディング ═══════════
 
+// あいことばは Firestore のパスの一部になる。半角英数字・ハイフン・アンダースコアのみ、
+// 8文字以上30文字以下（短すぎる合言葉は他人に推測されやすいため弾く）
+const JAR_CODE_PATTERN = /^[A-Za-z0-9_-]{8,30}$/;
+
+function jarCodeError(code) {
+  if (code === '') return '';
+  if (/^__.*__$/.test(code)) return 'その組み合わせは使えないよ。別のあいことばにしてね';
+  if (!JAR_CODE_PATTERN.test(code)) return '半角英数字・ハイフンのみ、8〜30文字で入力してね';
+  return '';
+}
+
 function setupOnboarding() {
   const input = $('onboarding-name');
   const jarcodeInput = $('onboarding-jarcode');
+  const jarcodeErrorEl = $('onboarding-jarcode-error');
   const start = $('onboarding-start');
 
   const checkReady = () => {
-    start.disabled = input.value.trim() === '' || jarcodeInput.value.trim() === '';
+    const err = jarCodeError(jarcodeInput.value.trim());
+    jarcodeErrorEl.textContent = err;
+    jarcodeErrorEl.classList.toggle('hidden', err === '');
+    start.disabled = input.value.trim() === '' || jarcodeInput.value.trim() === '' || err !== '';
   };
   input.addEventListener('input', checkReady);
   jarcodeInput.addEventListener('input', checkReady);
@@ -78,7 +93,7 @@ function setupOnboarding() {
   start.addEventListener('click', async () => {
     const name = input.value.trim();
     const jarCode = jarcodeInput.value.trim();
-    if (!name || !jarCode) return;
+    if (!name || !jarCode || jarCodeError(jarCode) !== '') return;
     profile = { name, jarCode };
     saveProfile(profile);
     renderHome();
