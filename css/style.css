@@ -130,7 +130,18 @@ html, body {
   border-radius: 999px;
   cursor: pointer;
 }
-.ghost-btn--danger { color: #E26D6D; }
+.ghost-btn--danger { color: #E26D6D; transition: background .2s, color .2s; }
+.ghost-btn--danger.armed {
+  background: #FFE3E3;
+  color: #D64545;
+}
+
+.detail-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 18px;
+}
 
 /* ─── 入力 ─── */
 .field-label {

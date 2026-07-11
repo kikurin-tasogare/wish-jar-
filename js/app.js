@@ -339,6 +339,15 @@ function setupDetailModal() {
     $(id).addEventListener('change', save);
   });
   $('detail-place').addEventListener('blur', save);
+
+  $('detail-done').addEventListener('click', () => {
+    if (!detailItemId) return;
+    const id = detailItemId;
+    closeModal('detail-modal');
+    completeWithAnimation(id);
+  });
+
+  setupTwoTapDelete($('detail-delete'), () => detailItemId, () => closeModal('detail-modal'));
 }
 
 function openDetail(id) {
@@ -351,6 +360,7 @@ function openDetail(id) {
   $('detail-time').value = item.time || '';
   const animal = animalByName(item.animal);
   $('detail-mascot').innerHTML = animal.svg;
+  $('detail-delete').resetDelete?.();
   openModal('detail-modal');
 }
 
@@ -361,23 +371,49 @@ function setupActionSheet() {
     if (!sheetItemId) return;
     const id = sheetItemId;
     closeModal('action-sheet');
-    const card = document.querySelector(`.wish-card[data-id="${CSS.escape(id)}"]`);
-    if (card) {
-      card.classList.add('completing');
-      setTimeout(() => completeItem(id), 550);
-    } else {
-      completeItem(id);
-    }
+    completeWithAnimation(id);
   });
 
-  $('sheet-delete').addEventListener('click', () => {
-    if (!sheetItemId) return;
-    const item = getItem(sheetItemId);
-    if (item && confirm(`「${item.title}」を削除する？`)) {
-      deleteItem(sheetItemId);
+  setupTwoTapDelete($('sheet-delete'), () => sheetItemId, () => closeModal('action-sheet'));
+}
+
+// カードをふわっと飛ばしてから思い出にする
+function completeWithAnimation(id) {
+  const card = document.querySelector(`.wish-card[data-id="${CSS.escape(id)}"]`);
+  if (card) {
+    card.classList.add('completing');
+    setTimeout(() => completeItem(id), 550);
+  } else {
+    completeItem(id);
+  }
+}
+
+// 誤タップ防止の2段階削除ボタン
+// （1回目のタップで「ほんとに削除する？」に変わり、2回目で実行。3秒で元に戻る）
+function setupTwoTapDelete(btn, getId, onDeleted) {
+  let armed = false;
+  let timer = null;
+  const reset = () => {
+    armed = false;
+    clearTimeout(timer);
+    btn.textContent = '削除する';
+    btn.classList.remove('armed');
+  };
+  btn.addEventListener('click', () => {
+    const id = getId();
+    if (!id) return;
+    if (!armed) {
+      armed = true;
+      btn.textContent = 'ほんとに削除する？';
+      btn.classList.add('armed');
+      timer = setTimeout(reset, 3000);
+      return;
     }
-    closeModal('action-sheet');
+    reset();
+    deleteItem(id);
+    onDeleted();
   });
+  btn.resetDelete = reset;
 }
 
 function openActionSheet(id) {
@@ -385,6 +421,7 @@ function openActionSheet(id) {
   if (!item) return;
   sheetItemId = id;
   $('sheet-title').textContent = item.title;
+  $('sheet-delete').resetDelete?.();
   openModal('action-sheet');
 }
 
