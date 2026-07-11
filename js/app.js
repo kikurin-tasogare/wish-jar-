@@ -3,7 +3,7 @@
 // ═══════════════════════════════════════════
 
 import {
-  initStore, onChange, getWishes, getMemories, getItem,
+  initStore, onChange, getItems, getWishes, getMemories, getItem,
   addItem, updateItem, completeItem, deleteItem, reorderWishes, addPhoto,
   getProfile, saveProfile,
 } from './store.js';
@@ -88,20 +88,53 @@ function setupHome() {
 }
 
 function renderHome(remoteIds = []) {
-  const list = $('wish-list');
+  const cols = $('wish-columns');
   const wishes = getWishes();
-  list.textContent = '';
+  cols.textContent = '';
 
   $('empty-home').classList.toggle('hidden', wishes.length > 0);
   if (wishes.length === 0 && !$('empty-art').innerHTML) {
     $('empty-art').innerHTML = JAR_SVG;
   }
+  if (wishes.length === 0) return;
 
-  wishes.forEach(item => {
-    const card = buildWishCard(item);
-    if (remoteIds.includes(item.id)) card.classList.add('remote-new');
-    list.appendChild(card);
+  // 自分の列と相手の列に分けて半分ずつ表示
+  const mine = wishes.filter(w => w.owner === profile.name);
+  const theirs = wishes.filter(w => w.owner !== profile.name);
+
+  [
+    { name: profile.name, list: mine, cls: 'wish-col-name--mine' },
+    { name: partnerName(), list: theirs, cls: 'wish-col-name--theirs' },
+  ].forEach(({ name, list, cls }) => {
+    const col = document.createElement('div');
+    col.className = 'wish-col';
+
+    const head = document.createElement('div');
+    head.className = `wish-col-name ${cls}`;
+    head.textContent = name;
+    col.appendChild(head);
+
+    if (list.length === 0) {
+      const empty = document.createElement('p');
+      empty.className = 'wish-col-empty';
+      empty.textContent = 'まだないよ';
+      col.appendChild(empty);
+    }
+
+    list.forEach(item => {
+      const card = buildWishCard(item);
+      if (remoteIds.includes(item.id)) card.classList.add('remote-new');
+      col.appendChild(card);
+    });
+    cols.appendChild(col);
   });
+}
+
+// 相手の名前（アイテムの記録から一番新しいものを拾う）
+function partnerName() {
+  const others = getItems().filter(i => i.owner !== profile.name);
+  if (others.length === 0) return 'あいて';
+  return others.sort((a, b) => (b.updatedAt ?? 0) - (a.updatedAt ?? 0))[0].owner;
 }
 
 function buildWishCard(item) {
@@ -112,11 +145,6 @@ function buildWishCard(item) {
   card.dataset.id = item.id;
   card.style.background = item.color;
   card.setAttribute('role', 'listitem');
-
-  const owner = document.createElement('div');
-  owner.className = 'wish-owner';
-  owner.textContent = item.owner;
-  card.appendChild(owner);
 
   const av = document.createElement('div');
   av.className = 'wish-animal';
@@ -194,7 +222,7 @@ function attachCardGestures(card, item, avatarEl, animal) {
     if (dragging) {
       card.style.transform = '';
       card.classList.remove('dragging');
-      const ids = [...$('wish-list').children].map(c => c.dataset.id);
+      const ids = [...card.parentElement.querySelectorAll('.wish-card')].map(c => c.dataset.id);
       reorderWishes(ids);
     } else if (armed) {
       // 長押しして離した → アクションシート
@@ -222,10 +250,10 @@ function attachCardGestures(card, item, avatarEl, animal) {
 }
 
 // ドラッグ中、指に最も近いカードを見つけて、その前後に入れ替える
-// （2列グリッド表示に対応するため、上下左右どちらの隣接カードも判定する）
+// （並べ替えは自分の列の中だけ。相手の列には移動できない）
 function swapIfNeeded(card, pointerX, pointerY) {
-  const list = $('wish-list');
-  const others = [...list.children].filter(c => c !== card);
+  const list = card.parentElement;
+  const others = [...list.querySelectorAll('.wish-card')].filter(c => c !== card);
   let nearest = null;
   let nearestDist = Infinity;
   for (const c of others) {
@@ -583,8 +611,14 @@ function setupSettings() {
   $('settings-name').addEventListener('change', () => {
     const name = $('settings-name').value.trim();
     if (!name) return;
+    const oldName = profile.name;
     profile.name = name;
     saveProfile(profile);
+    // 自分のカードも新しい名前に引き継ぐ（列の振り分けがずれないように）
+    getItems().forEach(i => {
+      if (i.owner === oldName) updateItem(i.id, { owner: name });
+    });
+    renderHome();
   });
 }
 
