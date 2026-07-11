@@ -116,33 +116,27 @@ function buildWishCard(item) {
   const owner = document.createElement('div');
   owner.className = 'wish-owner';
   owner.textContent = item.owner;
-
-  const title = document.createElement('div');
-  title.className = 'wish-title';
-  title.textContent = item.title;
-
-  card.append(owner, title);
-
-  if (item.place || item.date) {
-    const meta = document.createElement('div');
-    meta.className = 'wish-meta';
-    if (item.place) {
-      const p = document.createElement('span');
-      p.textContent = `📍 ${item.place}`;
-      meta.appendChild(p);
-    }
-    if (item.date) {
-      const d = document.createElement('span');
-      d.textContent = `🗓️ ${formatDate(item.date)}${item.time ? ' ' + item.time : ''} 予定`;
-      meta.appendChild(d);
-    }
-    card.appendChild(meta);
-  }
+  card.appendChild(owner);
 
   const av = document.createElement('div');
   av.className = 'wish-animal';
   av.innerHTML = animal.svg; // 固定SVG（ユーザー入力を含まない）
   card.appendChild(av);
+
+  const title = document.createElement('div');
+  title.className = 'wish-title';
+  title.textContent = item.title;
+  card.appendChild(title);
+
+  if (item.place || item.date) {
+    const bits = [];
+    if (item.place) bits.push(`📍${item.place}`);
+    if (item.date) bits.push(`🗓${formatDateShort(item.date)}${item.time ? ' ' + item.time : ''}`);
+    const meta = document.createElement('div');
+    meta.className = 'wish-meta';
+    meta.textContent = bits.join(' ・ ');
+    card.appendChild(meta);
+  }
 
   attachCardGestures(card, item, av, animal);
   return card;
@@ -187,11 +181,11 @@ function attachCardGestures(card, item, avatarEl, animal) {
       return;
     }
     // 長押し後に動いた → ドラッグ並べ替え
-    if (!dragging && Math.abs(dy) > 6) dragging = true;
+    if (!dragging && Math.hypot(dx, dy) > 6) dragging = true;
     if (dragging) {
       e.preventDefault();
-      card.style.transform = `translateY(${dy}px) scale(1.04)`;
-      swapIfNeeded(card, e.clientY);
+      card.style.transform = `translate(${dx}px, ${dy}px) scale(1.04)`;
+      swapIfNeeded(card, e.clientX, e.clientY);
     }
   });
 
@@ -227,24 +221,29 @@ function attachCardGestures(card, item, avatarEl, animal) {
   });
 }
 
-// ドラッグ中、隣のカードの中心を越えたら DOM の順序を入れ替える
-function swapIfNeeded(card, pointerY) {
+// ドラッグ中、指に最も近いカードを見つけて、その前後に入れ替える
+// （2列グリッド表示に対応するため、上下左右どちらの隣接カードも判定する）
+function swapIfNeeded(card, pointerX, pointerY) {
   const list = $('wish-list');
-  const prev = card.previousElementSibling;
-  const next = card.nextElementSibling;
-  if (prev) {
-    const r = prev.getBoundingClientRect();
-    if (pointerY < r.top + r.height / 2) {
-      list.insertBefore(card, prev);
-      return;
+  const others = [...list.children].filter(c => c !== card);
+  let nearest = null;
+  let nearestDist = Infinity;
+  for (const c of others) {
+    const r = c.getBoundingClientRect();
+    const cx = r.left + r.width / 2;
+    const cy = r.top + r.height / 2;
+    const dist = (cx - pointerX) ** 2 + (cy - pointerY) ** 2;
+    if (dist < nearestDist) {
+      nearestDist = dist;
+      nearest = c;
     }
   }
-  if (next) {
-    const r = next.getBoundingClientRect();
-    if (pointerY > r.top + r.height / 2) {
-      list.insertBefore(next, card);
-    }
-  }
+  if (!nearest) return;
+  const r = nearest.getBoundingClientRect();
+  // 指がそのカードの後半（右下寄り）にあれば後ろへ、前半なら前へ挿入
+  const past = pointerY > r.top + r.height / 2 ||
+    (pointerY > r.top && pointerY < r.bottom && pointerX > r.left + r.width / 2);
+  list.insertBefore(card, past ? nearest.nextElementSibling : nearest);
 }
 
 // ═══════════ 新規追加 ═══════════
@@ -616,6 +615,13 @@ function formatDate(iso) {
   const [y, m, d] = iso.split('-').map(Number);
   const thisYear = new Date().getFullYear();
   return y === thisYear ? `${m}月${d}日` : `${y}年${m}月${d}日`;
+}
+
+// カード表示用の省スペース版（例：7/20）
+function formatDateShort(iso) {
+  const [y, m, d] = iso.split('-').map(Number);
+  const thisYear = new Date().getFullYear();
+  return y === thisYear ? `${m}/${d}` : `${y}/${m}/${d}`;
 }
 
 main();
