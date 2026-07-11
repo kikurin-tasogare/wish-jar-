@@ -3,7 +3,7 @@
    ═══════════════════════════════════════════ */
 
 :root {
-  --bg: #FFF8F0;
+  --bg: #EDE0D2;
   --ink: #5B4A47;
   --ink-soft: #9C8B87;
   --white: #FFFFFF;
@@ -204,7 +204,7 @@ html, body {
   text-overflow: ellipsis;
   white-space: nowrap;
 }
-.wish-col-name--mine { background: var(--pastel-pink); }
+.wish-col-name--mine { background: var(--pastel-mint); }
 .wish-col-name--theirs { background: var(--pastel-blue); }
 
 .wish-col-empty {
