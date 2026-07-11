@@ -232,6 +232,41 @@ export function animalByName(name) {
   return ANIMALS.find(a => a.name === name) || ANIMALS[0];
 }
 
+// 表紙用の大きなびん。叶えた思い出の数だけキャンディが溜まる
+// ふたは .jar-lid グループとして分離（タップ時の開き演出用）
+export function coverJarSVG(memoryCount) {
+  const CANDY_COLORS = ['#FFD9E3', '#FFF7B3', '#D2F5DF', '#E8DFFF', '#CDEBFF', '#FFE3CD'];
+  const count = Math.min(memoryCount, 22);
+  const candies = [];
+  // びんの底から行ごとに詰めていく（位置は少しゆらして手作り感を出す)
+  const rows = [4, 5, 4, 5, 4];
+  let placed = 0;
+  let y = 120;
+  for (let r = 0; r < rows.length && placed < count; r++) {
+    const n = rows[r];
+    const span = 60 / (n - 1);
+    for (let c = 0; c < n && placed < count; c++) {
+      const jx = ((placed * 37) % 7) - 3;
+      const jy = ((placed * 23) % 5) - 2;
+      const x = 30 + c * span + jx;
+      candies.push(
+        `<circle cx="${x}" cy="${y + jy}" r="8" fill="${CANDY_COLORS[placed % CANDY_COLORS.length]}"/>`);
+      placed++;
+    }
+    y -= 15;
+  }
+  return `
+<svg viewBox="0 0 120 150" xmlns="http://www.w3.org/2000/svg">
+  <path d="M 30 22 L 90 22 Q 100 36 100 56 L 100 118 Q 100 134 84 134 L 36 134 Q 20 134 20 118 L 20 56 Q 20 36 30 22 Z"
+        fill="#DFF3FA" opacity=".88" stroke="#AEDCEE" stroke-width="3"/>
+  ${candies.join('\n  ')}
+  <path d="M 32 32 Q 38 27 48 26" stroke="#fff" stroke-width="4" fill="none" stroke-linecap="round" opacity=".85"/>
+  <g class="jar-lid">
+    <rect x="38" y="5" width="44" height="14" rx="7" fill="#E8A251"/>
+  </g>
+</svg>`;
+}
+
 // びん（Wish Jar）のイラスト
 export const JAR_SVG = `
 <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">

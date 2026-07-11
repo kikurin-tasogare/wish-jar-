@@ -7,7 +7,7 @@ import {
   addItem, updateItem, completeItem, deleteItem, reorderWishes, addPhoto,
   getProfile, saveProfile,
 } from './store.js';
-import { animalByName, ANIMALS, JAR_SVG } from './animals.js';
+import { animalByName, ANIMALS, JAR_SVG, coverJarSVG } from './animals.js';
 import { SYNC_ENABLED } from './config.js';
 
 const $ = (id) => document.getElementById(id);
@@ -35,6 +35,7 @@ async function main() {
     : '📱 この端末に保存中（共有設定は README を見てね）';
 
   setupOnboarding();
+  setupCover();
   setupHome();
   setupAddModal();
   setupDetailModal();
@@ -44,8 +45,8 @@ async function main() {
   setupPhotos();
 
   if (profile) {
-    showScreen('home');
     renderHome();
+    openCover();
   } else {
     $('onboarding-jar').innerHTML = JAR_SVG;
     showScreen('onboarding');
@@ -53,7 +54,7 @@ async function main() {
 }
 
 function showScreen(id) {
-  ['onboarding', 'home', 'jar'].forEach(s => $(s).classList.toggle('hidden', s !== id));
+  ['cover', 'onboarding', 'home', 'jar'].forEach(s => $(s).classList.toggle('hidden', s !== id));
 }
 
 // ═══════════ オンボーディング ═══════════
@@ -71,9 +72,35 @@ function setupOnboarding() {
     if (!name) return;
     profile = { name };
     saveProfile(profile);
-    showScreen('home');
     renderHome();
+    openCover();
   });
+}
+
+// ═══════════ 表紙（起動時のみ） ═══════════
+
+function setupCover() {
+  const jar = $('cover-jar');
+  let opening = false;
+
+  jar.addEventListener('click', () => {
+    if (opening) return;
+    opening = true;
+    if (navigator.vibrate) navigator.vibrate(20);
+    jar.classList.add('opening');
+    // ぷるん → ふたが開く → リスト画面へ
+    setTimeout(() => {
+      showScreen('home');
+      jar.classList.remove('opening');
+      opening = false;
+    }, 620);
+  });
+}
+
+function openCover() {
+  // キャンディは叶えた思い出の数だけ溜まる
+  $('cover-jar').innerHTML = coverJarSVG(getMemories().length);
+  showScreen('cover');
 }
 
 // ═══════════ メイン画面 ═══════════
