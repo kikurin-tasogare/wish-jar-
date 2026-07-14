@@ -1,12 +1,12 @@
 {
-  "name": "Wish Jar",
-  "short_name": "Wish Jar",
+  "name": "しあわせの小瓶",
+  "short_name": "しあわせの小瓶",
   "description": "ふたりの「行きたい・やりたい」を集めるびん",
   "lang": "ja",
   "start_url": "./index.html",
   "display": "standalone",
-  "background_color": "#FFF8F0",
-  "theme_color": "#FFF8F0",
+  "background_color": "#EDE0D2",
+  "theme_color": "#EDE0D2",
   "icons": [
     {
       "src": "icons/icon.svg",
