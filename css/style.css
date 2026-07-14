@@ -221,6 +221,33 @@ html, body {
   padding: 16px 4px;
 }
 
+.wish-col-more {
+  border: none;
+  border-radius: 999px;
+  padding: 10px 8px;
+  font-size: 12px;
+  font-weight: bold;
+  color: var(--ink);
+  font-family: inherit;
+  cursor: pointer;
+  box-shadow: var(--shadow);
+  transition: transform .15s ease;
+}
+.wish-col-more:active { transform: scale(0.94); }
+.wish-col-more--mine { background: var(--pastel-mint); }
+.wish-col-more--theirs { background: var(--pastel-blue); }
+
+.sheet-card--tall {
+  max-height: 82dvh;
+  overflow-y: auto;
+}
+
+.wish-sheet-list {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
 .wish-card {
   position: relative;
   border-radius: 20px;

@@ -18,6 +18,7 @@ let sheetItemId = null;    // アクションシートの対象
 let photoItemId = null;    // 写真追加の対象
 let calYear, calMonth;     // カレンダー表示中の年月
 let calSelected = null;    // 選択中の日付（YYYY-MM-DD）
+let openSheetSide = null;  // 「ぜんぶ見る」シートで開いている側（'mine' | 'theirs' | null）
 
 // ═══════════ 起動 ═══════════
 
@@ -27,6 +28,7 @@ async function main() {
 
   onChange((_, remoteIds) => {
     renderHome(remoteIds);
+    refreshWishSheetIfOpen();
     if (!$('jar').classList.contains('hidden')) renderCalendar();
   });
 
@@ -163,6 +165,8 @@ function setupHome() {
   });
 }
 
+const WISH_PREVIEW_COUNT = 2;
+
 function renderHome(remoteIds = []) {
   const cols = $('wish-columns');
   const wishes = getWishes();
@@ -179,9 +183,9 @@ function renderHome(remoteIds = []) {
   const theirs = wishes.filter(w => w.owner !== profile.name);
 
   [
-    { name: profile.name, list: mine, cls: 'wish-col-name--mine' },
-    { name: partnerName(), list: theirs, cls: 'wish-col-name--theirs' },
-  ].forEach(({ name, list, cls }) => {
+    { name: profile.name, list: mine, cls: 'wish-col-name--mine', side: 'mine' },
+    { name: partnerName(), list: theirs, cls: 'wish-col-name--theirs', side: 'theirs' },
+  ].forEach(({ name, list, cls, side }) => {
     const col = document.createElement('div');
     col.className = 'wish-col';
 
@@ -197,13 +201,49 @@ function renderHome(remoteIds = []) {
       col.appendChild(empty);
     }
 
-    list.forEach(item => {
+    list.slice(0, WISH_PREVIEW_COUNT).forEach(item => {
       const card = buildWishCard(item);
       if (remoteIds.includes(item.id)) card.classList.add('remote-new');
       col.appendChild(card);
     });
+
+    if (list.length > WISH_PREVIEW_COUNT) {
+      const more = document.createElement('button');
+      more.className = `wish-col-more wish-col-more--${side}`;
+      more.textContent = `+${list.length - WISH_PREVIEW_COUNT} ぜんぶ見る`;
+      more.addEventListener('click', () => openWishSheet(side, name, list));
+      col.appendChild(more);
+    }
     cols.appendChild(col);
   });
+}
+
+function openWishSheet(side, name, list) {
+  openSheetSide = side;
+  fillWishSheet(name, list);
+  openModal('wish-sheet');
+}
+
+function fillWishSheet(name, list) {
+  $('wish-sheet-title').textContent = `${name}のやりたいこと`;
+  const wrap = $('wish-sheet-list');
+  wrap.textContent = '';
+  list.forEach(item => wrap.appendChild(buildWishCard(item)));
+}
+
+// シートを開いたまま相手が完了・削除した場合などに中身を追従させる
+function refreshWishSheetIfOpen() {
+  if (!openSheetSide || $('wish-sheet').classList.contains('hidden')) return;
+  const wishes = getWishes();
+  const list = openSheetSide === 'mine'
+    ? wishes.filter(w => w.owner === profile.name)
+    : wishes.filter(w => w.owner !== profile.name);
+  if (list.length === 0) {
+    closeModal('wish-sheet');
+    return;
+  }
+  const name = openSheetSide === 'mine' ? profile.name : partnerName();
+  fillWishSheet(name, list);
 }
 
 // 相手の名前（アイテムの記録から一番新しいものを拾う）
@@ -429,6 +469,7 @@ function setupDetailModal() {
 function openDetail(id) {
   const item = getItem(id);
   if (!item) return;
+  if (!$('wish-sheet').classList.contains('hidden')) closeModal('wish-sheet');
   detailItemId = id;
   $('detail-title').textContent = item.title;
   $('detail-place').value = item.place || '';
@@ -495,6 +536,7 @@ function setupTwoTapDelete(btn, getId, onDeleted) {
 function openActionSheet(id) {
   const item = getItem(id);
   if (!item) return;
+  if (!$('wish-sheet').classList.contains('hidden')) closeModal('wish-sheet');
   sheetItemId = id;
   $('sheet-title').textContent = item.title;
   $('sheet-delete').resetDelete?.();
@@ -763,6 +805,7 @@ function closeModal(id) {
   $(id).classList.add('hidden');
   if (id === 'detail-modal') detailItemId = null;
   if (id === 'action-sheet') sheetItemId = null;
+  if (id === 'wish-sheet') openSheetSide = null;
 }
 
 document.querySelectorAll('.modal-close').forEach(btn => {
