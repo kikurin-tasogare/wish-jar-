@@ -40,11 +40,16 @@ async function main() {
   setupSettings();
   setupPhotos();
 
-  if (profile) {
+  if (profile && isValidJarCode(profile.jarCode)) {
     renderHome();
     openCover();
     const { mode } = await startSync(profile.jarCode);
     updateSyncStatus(mode);
+  } else if (profile) {
+    // 名前はすでにあるが、あいことば未設定の端末（あいことば機能追加前に
+    // オンボーディングを済ませた端末）。あいことばだけ追加で聞く
+    updateSyncStatus('local');
+    showJarCodeOnlyOnboarding();
   } else {
     updateSyncStatus('local');
     $('onboarding-jar').innerHTML = JAR_SVG;
@@ -75,7 +80,22 @@ function jarCodeError(code) {
   return '';
 }
 
+function isValidJarCode(code) {
+  return typeof code === 'string' && code !== '' && jarCodeError(code) === '';
+}
+
+// あいことば機能の追加前にオンボーディングを済ませた端末向け：
+// 名前欄は隠して、あいことばだけを追加で聞く
+function showJarCodeOnlyOnboarding() {
+  $('onboarding-jar').innerHTML = JAR_SVG;
+  $('onboarding-name-group').classList.add('hidden');
+  $('onboarding-title').textContent = 'もうひとつだけ';
+  $('onboarding-sub').innerHTML = 'ふたりでリアルタイム共有するために<br>あいことばを決めてね';
+  showScreen('onboarding');
+}
+
 function setupOnboarding() {
+  const nameGroup = $('onboarding-name-group');
   const input = $('onboarding-name');
   const jarcodeInput = $('onboarding-jarcode');
   const jarcodeErrorEl = $('onboarding-jarcode-error');
@@ -85,16 +105,17 @@ function setupOnboarding() {
     const err = jarCodeError(jarcodeInput.value.trim());
     jarcodeErrorEl.textContent = err;
     jarcodeErrorEl.classList.toggle('hidden', err === '');
-    start.disabled = input.value.trim() === '' || jarcodeInput.value.trim() === '' || err !== '';
+    const nameOk = nameGroup.classList.contains('hidden') || input.value.trim() !== '';
+    start.disabled = !nameOk || jarcodeInput.value.trim() === '' || err !== '';
   };
   input.addEventListener('input', checkReady);
   jarcodeInput.addEventListener('input', checkReady);
 
   start.addEventListener('click', async () => {
-    const name = input.value.trim();
+    const name = nameGroup.classList.contains('hidden') ? profile.name : input.value.trim();
     const jarCode = jarcodeInput.value.trim();
     if (!name || !jarCode || jarCodeError(jarCode) !== '') return;
-    profile = { name, jarCode };
+    profile = { ...profile, name, jarCode };
     saveProfile(profile);
     renderHome();
     openCover();
@@ -136,6 +157,8 @@ function setupHome() {
   $('jar-btn').addEventListener('click', openJar);
   $('settings-btn').addEventListener('click', () => {
     $('settings-name').value = profile.name;
+    $('settings-jarcode').value = profile.jarCode || '';
+    $('settings-jarcode-error').classList.add('hidden');
     openModal('settings-modal');
   });
 }
@@ -709,6 +732,24 @@ function setupSettings() {
       if (i.owner === oldName) updateItem(i.id, { owner: name });
     });
     renderHome();
+  });
+
+  $('settings-jarcode').addEventListener('change', () => {
+    const jarCode = $('settings-jarcode').value.trim();
+    const errEl = $('settings-jarcode-error');
+    const err = jarCodeError(jarCode);
+    if (jarCode === '' || err !== '') {
+      errEl.textContent = err || '半角英数字・ハイフンのみ、8〜30文字で入力してね';
+      errEl.classList.remove('hidden');
+      $('settings-jarcode').value = profile.jarCode || '';
+      return;
+    }
+    if (jarCode === profile.jarCode) return;
+    errEl.classList.add('hidden');
+    profile.jarCode = jarCode;
+    saveProfile(profile);
+    // 同期先が変わるので、まっさらな状態からやり直す
+    location.reload();
   });
 }
 

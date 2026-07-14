@@ -18,11 +18,13 @@
   <section id="onboarding" class="screen hidden">
     <div class="onboarding-inner">
       <div class="onboarding-jar" id="onboarding-jar"></div>
-      <h1 class="onboarding-title">Wish Jar</h1>
-      <p class="onboarding-sub">ふたりの「行きたい・やりたい」を<br>集めるびんです</p>
-      <label class="field-label" for="onboarding-name">あなたの名前</label>
-      <input id="onboarding-name" class="text-input" type="text"
-             placeholder="なまえを入力（あとで変えられるよ）" maxlength="10" autocomplete="off">
+      <h1 class="onboarding-title" id="onboarding-title">Wish Jar</h1>
+      <p class="onboarding-sub" id="onboarding-sub">ふたりの「行きたい・やりたい」を<br>集めるびんです</p>
+      <div id="onboarding-name-group">
+        <label class="field-label" for="onboarding-name">あなたの名前</label>
+        <input id="onboarding-name" class="text-input" type="text"
+               placeholder="なまえを入力（あとで変えられるよ）" maxlength="10" autocomplete="off">
+      </div>
       <label class="field-label" for="onboarding-jarcode">ふたりのあいことば</label>
       <input id="onboarding-jarcode" class="text-input" type="text"
              placeholder="半角英数字とハイフンで8文字以上" maxlength="30" autocomplete="off">
@@ -135,6 +137,9 @@
       </div>
       <label class="field-label" for="settings-name">あなたの名前</label>
       <input id="settings-name" class="text-input" type="text" maxlength="10" autocomplete="off">
+      <label class="field-label" for="settings-jarcode">ふたりのあいことば</label>
+      <input id="settings-jarcode" class="text-input" type="text" maxlength="30" autocomplete="off">
+      <p class="field-error hidden" id="settings-jarcode-error"></p>
       <p class="autosave-note" id="sync-status"></p>
     </div>
   </div>
