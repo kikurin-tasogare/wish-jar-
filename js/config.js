@@ -63,5 +63,4 @@ export const FIREBASE_CONFIG = {
   appId: '1:484976961978:web:c311320f5b40cc64f31583',
 };
 
-// wishjar-disable-sync は開発時にローカル単体で動かすための隠しフラグ
-export const SYNC_ENABLED = FIREBASE_CONFIG.apiKey !== '' && !localStorage.getItem('wishjar-disable-sync');
+export const SYNC_ENABLED = FIREBASE_CONFIG.apiKey !== '';
