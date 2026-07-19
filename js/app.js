@@ -228,7 +228,7 @@ function fillWishSheet(name, list) {
   $('wish-sheet-title').textContent = `${name}のやりたいこと`;
   const wrap = $('wish-sheet-list');
   wrap.textContent = '';
-  list.forEach(item => wrap.appendChild(buildWishCard(item)));
+  list.forEach(item => wrap.appendChild(buildWishCard(item, { compact: true })));
 }
 
 // シートを開いたまま相手が完了・削除した場合などに中身を追従させる
@@ -253,11 +253,11 @@ function partnerName() {
   return others.sort((a, b) => (b.updatedAt ?? 0) - (a.updatedAt ?? 0))[0].owner;
 }
 
-function buildWishCard(item) {
+function buildWishCard(item, { compact = false } = {}) {
   const animal = animalByName(item.animal);
 
   const card = document.createElement('div');
-  card.className = 'wish-card';
+  card.className = compact ? 'wish-card wish-card--row' : 'wish-card';
   card.dataset.id = item.id;
   card.style.background = item.color;
   card.setAttribute('role', 'listitem');
@@ -272,7 +272,7 @@ function buildWishCard(item) {
   title.textContent = item.title;
   card.appendChild(title);
 
-  if (item.place || item.date) {
+  if (!compact && (item.place || item.date)) {
     const bits = [];
     if (item.place) bits.push(`📍${item.place}`);
     if (item.date) bits.push(`🗓${formatDateShort(item.date)}${item.time ? ' ' + item.time : ''}`);
