@@ -225,15 +225,17 @@ function renderHome(remoteIds = []) {
       });
       sec.appendChild(btn);
 
+      // 縮小中はヘッダーだけ残してアイテムは格納する
       if (!isExpanded) {
         sec.classList.add('collapsed');
+        listEl.appendChild(sec);
+        return;
       }
     }
 
     sectionItems.forEach(item => {
       const card = buildWishCard(item, { compact: true });
       if (remoteIds.includes(item.id)) card.classList.add('remote-new');
-      if (!isExpanded) card.classList.add('collapsed-item');
       sec.appendChild(card);
     });
     listEl.appendChild(sec);
