@@ -19,6 +19,7 @@ let photoItemId = null;    // 写真追加の対象
 let calYear, calMonth;     // カレンダー表示中の年月
 let calSelected = null;    // 選択中の日付（YYYY-MM-DD）
 let homeFilter = 'all';    // ホームの絞り込み（'all' | 'mine' | 'theirs'）
+let sectionExpanded = { soon: true, someday: true };  // セクション展開状態
 
 // ═══════════ 起動 ═══════════
 
@@ -165,6 +166,9 @@ function setupHome() {
 }
 
 function renderHome(remoteIds = []) {
+  const stored = localStorage.getItem('wishjar-section-state');
+  if (stored) sectionExpanded = JSON.parse(stored);
+
   const listEl = $('wish-list');
   const wishes = getWishes();
   listEl.textContent = '';
@@ -200,16 +204,32 @@ function renderHome(remoteIds = []) {
   const soon = filtered.filter(w => w.bucket === 'soon').sort(byStar);
   const someday = filtered.filter(w => w.bucket !== 'soon').sort(byStar);
 
-  const appendSection = (label, sectionItems) => {
+  const appendSection = (key, label, sectionItems) => {
     if (sectionItems.length === 0) return;
     const sec = document.createElement('div');
     sec.className = 'wish-section';
+    sec.dataset.sectionKey = key;
+
     if (label) {
-      const h = document.createElement('p');
-      h.className = 'wish-section-label';
-      h.textContent = label;
-      sec.appendChild(h);
+      const isExpanded = sectionExpanded[key] ?? true;
+      const btn = document.createElement('button');
+      btn.className = 'wish-section-header';
+      btn.setAttribute('aria-expanded', isExpanded);
+      btn.innerHTML = `<span class="wish-section-icon">${isExpanded ? '▼' : '▶'}</span><span>${label} <span class="wish-section-count">${sectionItems.length}</span></span>`;
+      btn.addEventListener('click', () => {
+        sectionExpanded[key] = !sectionExpanded[key];
+        localStorage.setItem('wishjar-section-state', JSON.stringify(sectionExpanded));
+        renderHome(remoteIds);
+      });
+      sec.appendChild(btn);
+
+      if (!isExpanded) {
+        sec.classList.add('collapsed');
+        listEl.appendChild(sec);
+        return;
+      }
     }
+
     sectionItems.forEach(item => {
       const card = buildWishCard(item, { compact: true });
       if (remoteIds.includes(item.id)) card.classList.add('remote-new');
@@ -219,10 +239,10 @@ function renderHome(remoteIds = []) {
   };
 
   if (soon.length === 0) {
-    appendSection(null, someday);
+    appendSection('someday', null, someday);
   } else {
-    appendSection('🌸 近いうちに', soon);
-    appendSection('☁️ いつかやりたい', someday);
+    appendSection('soon', '🌸 近いうちに', soon);
+    appendSection('someday', '☁️ いつかやりたい', someday);
   }
 }
 

@@ -234,12 +234,36 @@ html, body {
 }
 .wish-section + .wish-section { margin-top: 14px; }
 
-.wish-section-label {
+.wish-section-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  border: none;
+  background: transparent;
+  font-family: inherit;
   font-size: 12.5px;
   font-weight: bold;
   color: var(--ink-soft);
-  padding: 0 6px;
+  padding: 8px 6px;
+  margin: 0;
+  cursor: pointer;
+  text-align: left;
+  transition: color .2s ease;
 }
+.wish-section-header:active { color: var(--accent); }
+.wish-section-icon {
+  flex-shrink: 0;
+  width: 12px;
+  text-align: center;
+  transition: transform .2s ease;
+}
+.wish-section-count {
+  font-size: 11px;
+  color: var(--ink-soft);
+  opacity: .7;
+}
+.wish-section.collapsed .wish-section-icon { transform: rotate(-90deg); }
 
 .wish-star {
   flex-shrink: 0;
