@@ -184,22 +184,25 @@ html, body {
 .field-error.hidden { display: none; }
 
 /* ─── ふたりの列（左：自分 / 右：相手） ─── */
-.wish-columns {
+.owner-filter {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 12px;
-  align-items: start;
+  margin-bottom: 14px;
+}
+.owner-filter.hidden { display: none; }
+
+.wish-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
   padding-bottom: 40px;
 }
 
-.wish-col {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  min-width: 0;
-}
-
 .wish-col-name {
+  border: none;
+  font-family: inherit;
+  cursor: pointer;
   text-align: center;
   font-size: 13px;
   font-weight: bold;
@@ -210,7 +213,10 @@ html, body {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  transition: opacity .2s ease, transform .15s ease;
 }
+.wish-col-name:active { transform: scale(0.94); }
+.wish-col-name.inactive { opacity: .4; }
 .wish-col-name--mine { background: var(--pastel-mint); }
 .wish-col-name--theirs { background: var(--pastel-blue); }
 
@@ -221,32 +227,6 @@ html, body {
   padding: 16px 4px;
 }
 
-.wish-col-more {
-  border: none;
-  border-radius: 999px;
-  padding: 10px 8px;
-  font-size: 12px;
-  font-weight: bold;
-  color: var(--ink);
-  font-family: inherit;
-  cursor: pointer;
-  box-shadow: var(--shadow);
-  transition: transform .15s ease;
-}
-.wish-col-more:active { transform: scale(0.94); }
-.wish-col-more--mine { background: var(--pastel-mint); }
-.wish-col-more--theirs { background: var(--pastel-blue); }
-
-.sheet-card--tall {
-  max-height: 82dvh;
-  overflow-y: auto;
-}
-
-.wish-sheet-list {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
 
 .wish-card {
   position: relative;
@@ -328,6 +308,21 @@ html, body {
   min-width: 0;
   -webkit-line-clamp: 1;
 }
+
+.wish-owner {
+  flex-shrink: 0;
+  font-size: 10.5px;
+  font-weight: bold;
+  color: var(--ink);
+  padding: 4px 10px;
+  border-radius: 999px;
+  max-width: 76px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.wish-owner--mine { background: var(--pastel-mint); }
+.wish-owner--theirs { background: var(--pastel-blue); }
 
 .wish-meta {
   margin-top: 6px;

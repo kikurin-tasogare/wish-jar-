@@ -54,23 +54,13 @@
       <button id="add-btn" class="pill-btn pill-btn--add">＋ 追加</button>
       <button id="jar-btn" class="pill-btn pill-btn--jar">🫙 叶えた思い出</button>
     </div>
-    <div id="wish-columns" class="wish-columns"></div>
+    <div id="owner-filter" class="owner-filter hidden"></div>
+    <div id="wish-list" class="wish-list"></div>
     <div id="empty-home" class="empty-note hidden">
       <div class="empty-art" id="empty-art"></div>
       <p>まだ何もないよ。<br>「＋ 追加」からやりたいことを入れてね</p>
     </div>
   </section>
-
-  <!-- ═══════════ ぜんぶ見るシート ═══════════ -->
-  <div id="wish-sheet" class="modal hidden" role="dialog" aria-modal="true">
-    <div class="sheet-card sheet-card--tall">
-      <div class="modal-head">
-        <h2 class="modal-title" id="wish-sheet-title">ぜんぶ見る</h2>
-        <button class="icon-btn modal-close" data-close="wish-sheet" aria-label="閉じる">✕</button>
-      </div>
-      <div id="wish-sheet-list" class="wish-sheet-list"></div>
-    </div>
-  </div>
 
   <!-- ═══════════ 新規追加モーダル ═══════════ -->
   <div id="add-modal" class="modal hidden" role="dialog" aria-modal="true">
