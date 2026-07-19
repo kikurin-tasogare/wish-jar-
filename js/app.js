@@ -238,10 +238,14 @@ function buildWishCard(item, { compact = false } = {}) {
   card.style.background = item.color;
   card.setAttribute('role', 'listitem');
 
-  const av = document.createElement('div');
-  av.className = 'wish-animal';
-  av.innerHTML = animal.svg; // 固定SVG（ユーザー入力を含まない）
-  card.appendChild(av);
+  // コンパクト行では動物アイコンは付けない（タイトルと名前タグだけ）
+  let av = null;
+  if (!compact) {
+    av = document.createElement('div');
+    av.className = 'wish-animal';
+    av.innerHTML = animal.svg; // 固定SVG（ユーザー入力を含まない）
+    card.appendChild(av);
+  }
 
   const title = document.createElement('div');
   title.className = 'wish-title';
@@ -330,11 +334,16 @@ function attachCardGestures(card, item, avatarEl, animal) {
       card.classList.remove('dragging');
       openActionSheet(item.id);
     } else if (!moved) {
-      // タップ → キャラ反応 → 詳細へ
-      avatarEl.classList.remove(animal.anim);
-      void avatarEl.offsetWidth; // アニメ再生のためリフロー
-      avatarEl.classList.add(animal.anim);
-      setTimeout(() => openDetail(item.id), 480);
+      if (avatarEl) {
+        // タップ → キャラ反応 → 詳細へ
+        avatarEl.classList.remove(animal.anim);
+        void avatarEl.offsetWidth; // アニメ再生のためリフロー
+        avatarEl.classList.add(animal.anim);
+        setTimeout(() => openDetail(item.id), 480);
+      } else {
+        // アイコンなしのコンパクト行はすぐ詳細へ
+        openDetail(item.id);
+      }
     }
     armed = false;
     dragging = false;
