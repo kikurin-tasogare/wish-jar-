@@ -265,6 +265,26 @@ html, body {
 }
 .wish-section.collapsed .wish-section-icon { transform: rotate(-90deg); }
 
+/* 縮小状態のアイテム */
+.wish-card.collapsed-item {
+  padding: 6px 12px;
+  height: auto;
+  border-radius: 10px;
+  margin-bottom: 4px;
+  pointer-events: none;
+}
+.wish-card.collapsed-item .wish-star {
+  display: none;
+}
+.wish-card.collapsed-item .wish-title {
+  font-size: 12px;
+  -webkit-line-clamp: 1;
+}
+.wish-card.collapsed-item .wish-owner {
+  font-size: 10px;
+  opacity: .9;
+}
+
 .wish-star {
   flex-shrink: 0;
   border: none;

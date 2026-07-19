@@ -210,8 +210,10 @@ function renderHome(remoteIds = []) {
     sec.className = 'wish-section';
     sec.dataset.sectionKey = key;
 
+    // ラベルなし（1本リスト）のときは常に展開扱い
+    const isExpanded = label ? (sectionExpanded[key] ?? true) : true;
+
     if (label) {
-      const isExpanded = sectionExpanded[key] ?? true;
       const btn = document.createElement('button');
       btn.className = 'wish-section-header';
       btn.setAttribute('aria-expanded', isExpanded);
@@ -225,14 +227,13 @@ function renderHome(remoteIds = []) {
 
       if (!isExpanded) {
         sec.classList.add('collapsed');
-        listEl.appendChild(sec);
-        return;
       }
     }
 
     sectionItems.forEach(item => {
       const card = buildWishCard(item, { compact: true });
       if (remoteIds.includes(item.id)) card.classList.add('remote-new');
+      if (!isExpanded) card.classList.add('collapsed-item');
       sec.appendChild(card);
     });
     listEl.appendChild(sec);
