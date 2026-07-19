@@ -70,6 +70,8 @@ export function addItem(title, owner) {
     createdAt: new Date().toISOString(),
     status: 'wish',      // 'wish'（候補） | 'done'（完了 → Wish Jar）
     doneAt: null,        // 完了した日（YYYY-MM-DD）
+    bucket: 'someday',   // 'soon'（近いうちに） | 'someday'（いつかやりたい）
+    starred: false,      // 星つき（リストの上に固定）
     place: '',
     date: '',
     time: '',

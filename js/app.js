@@ -194,11 +194,36 @@ function renderHome(remoteIds = []) {
     return;
   }
 
-  filtered.forEach(item => {
-    const card = buildWishCard(item, { compact: true });
-    if (remoteIds.includes(item.id)) card.classList.add('remote-new');
-    listEl.appendChild(card);
-  });
+  // 「近いうちに」と「いつかやりたい」の2段。星つきは各段の上に固定。
+  // 「近いうちに」が空のあいだは、今まで通りの1本リストで見た目を変えない
+  const byStar = (a, b) => (b.starred ? 1 : 0) - (a.starred ? 1 : 0);
+  const soon = filtered.filter(w => w.bucket === 'soon').sort(byStar);
+  const someday = filtered.filter(w => w.bucket !== 'soon').sort(byStar);
+
+  const appendSection = (label, sectionItems) => {
+    if (sectionItems.length === 0) return;
+    const sec = document.createElement('div');
+    sec.className = 'wish-section';
+    if (label) {
+      const h = document.createElement('p');
+      h.className = 'wish-section-label';
+      h.textContent = label;
+      sec.appendChild(h);
+    }
+    sectionItems.forEach(item => {
+      const card = buildWishCard(item, { compact: true });
+      if (remoteIds.includes(item.id)) card.classList.add('remote-new');
+      sec.appendChild(card);
+    });
+    listEl.appendChild(sec);
+  };
+
+  if (soon.length === 0) {
+    appendSection(null, someday);
+  } else {
+    appendSection('🌸 近いうちに', soon);
+    appendSection('☁️ いつかやりたい', someday);
+  }
 }
 
 // 上部の名前ボタン。タップでその人のやりたいことだけに絞り込み、
@@ -245,6 +270,21 @@ function buildWishCard(item, { compact = false } = {}) {
     av.className = 'wish-animal';
     av.innerHTML = animal.svg; // 固定SVG（ユーザー入力を含まない）
     card.appendChild(av);
+  }
+
+  if (compact) {
+    // 星タップでピン留め（段の上に固定）。カードのタップ・長押しとは独立
+    const star = document.createElement('button');
+    star.className = 'wish-star' + (item.starred ? ' on' : '');
+    star.textContent = item.starred ? '⭐' : '☆';
+    star.setAttribute('aria-label', item.starred ? '星をはずす' : '星をつける');
+    star.addEventListener('pointerdown', (e) => e.stopPropagation());
+    star.addEventListener('pointerup', (e) => e.stopPropagation());
+    star.addEventListener('click', (e) => {
+      e.stopPropagation();
+      updateItem(item.id, { starred: !item.starred });
+    });
+    card.appendChild(star);
   }
 
   const title = document.createElement('div');
@@ -327,7 +367,8 @@ function attachCardGestures(card, item, avatarEl, animal) {
     if (dragging) {
       card.style.transform = '';
       card.classList.remove('dragging');
-      const ids = [...card.parentElement.querySelectorAll('.wish-card')].map(c => c.dataset.id);
+      // 段（セクション）をまたいでリスト全体の並び順を保存する
+      const ids = [...card.closest('.wish-list').querySelectorAll('.wish-card')].map(c => c.dataset.id);
       reorderWishes(ids);
     } else if (armed) {
       // 長押しして離した → アクションシート
@@ -484,6 +525,20 @@ function setupActionSheet() {
     completeWithAnimation(id);
   });
 
+  $('sheet-star').addEventListener('click', () => {
+    if (!sheetItemId) return;
+    const item = getItem(sheetItemId);
+    closeModal('action-sheet');
+    if (item) updateItem(item.id, { starred: !item.starred });
+  });
+
+  $('sheet-bucket').addEventListener('click', () => {
+    if (!sheetItemId) return;
+    const item = getItem(sheetItemId);
+    closeModal('action-sheet');
+    if (item) updateItem(item.id, { bucket: item.bucket === 'soon' ? 'someday' : 'soon' });
+  });
+
   setupTwoTapDelete($('sheet-delete'), () => sheetItemId, () => closeModal('action-sheet'));
 }
 
@@ -531,6 +586,10 @@ function openActionSheet(id) {
   if (!item) return;
   sheetItemId = id;
   $('sheet-title').textContent = item.title;
+  $('sheet-star').textContent = item.starred ? '☆ 星をはずす' : '⭐ 星をつけて上に固定';
+  $('sheet-bucket').textContent = item.bucket === 'soon'
+    ? '☁️ 「いつかやりたい」にもどす'
+    : '🌸 「近いうちに」へうつす';
   $('sheet-delete').resetDelete?.();
   openModal('action-sheet');
 }

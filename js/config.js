@@ -22,7 +22,7 @@
 //             && request.resource.data.keys().hasOnly([
 //                  'id', 'owner', 'title', 'createdAt', 'status', 'doneAt',
 //                  'place', 'date', 'time', 'photos', 'animal', 'color',
-//                  'order', 'updatedAt'
+//                  'order', 'updatedAt', 'bucket', 'starred'
 //                ])
 //             && request.resource.data.id is string
 //             && request.resource.data.id == item
@@ -39,6 +39,10 @@
 //             && request.resource.data.color is string
 //             && request.resource.data.order is number
 //             && request.resource.data.updatedAt is number
+//             && (!('bucket' in request.resource.data)
+//                  || request.resource.data.bucket in ['soon', 'someday'])
+//             && (!('starred' in request.resource.data)
+//                  || request.resource.data.starred is bool)
 //             && request.resource.data.photos is list
 //             && request.resource.data.photos.size() <= 6;
 //         }
@@ -59,4 +63,5 @@ export const FIREBASE_CONFIG = {
   appId: '1:484976961978:web:c311320f5b40cc64f31583',
 };
 
-export const SYNC_ENABLED = FIREBASE_CONFIG.apiKey !== '';
+// wishjar-disable-sync は開発時にローカル単体で動かすための隠しフラグ
+export const SYNC_ENABLED = FIREBASE_CONFIG.apiKey !== '' && !localStorage.getItem('wishjar-disable-sync');
