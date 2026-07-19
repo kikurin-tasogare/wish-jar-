@@ -244,8 +244,8 @@ function renderHome(remoteIds = []) {
   if (soon.length === 0) {
     appendSection('someday', null, someday);
   } else {
-    appendSection('soon', '🌸 近いうちに', soon);
-    appendSection('someday', '☁️ いつかやりたい', someday);
+    appendSection('soon', '🐬 近いうちに', soon);
+    appendSection('someday', '🐳 いつかやりたい', someday);
   }
 }
 
@@ -611,8 +611,8 @@ function openActionSheet(id) {
   $('sheet-title').textContent = item.title;
   $('sheet-star').textContent = item.starred ? '☆ 星をはずす' : '⭐ 星をつけて上に固定';
   $('sheet-bucket').textContent = item.bucket === 'soon'
-    ? '☁️ 「いつかやりたい」にもどす'
-    : '🌸 「近いうちに」へうつす';
+    ? '🐳 「いつかやりたい」にもどす'
+    : '🐬 「近いうちに」へうつす';
   $('sheet-delete').resetDelete?.();
   openModal('action-sheet');
 }

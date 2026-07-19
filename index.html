@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
-  <meta name="theme-color" content="#EDE0D2">
+  <meta name="theme-color" content="#DDEFF7">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <meta name="apple-mobile-web-app-title" content="しあわせの小瓶">
@@ -11,9 +11,28 @@
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="icon" href="icons/icon.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="icons/icon-180.png">
-  <link rel="stylesheet" href="css/style.css?v=20260720">
+  <link rel="stylesheet" href="css/style.css?v=20260720b">
 </head>
 <body>
+
+  <!-- ═══════════ 海の飾り（背景にふわふわ漂う） ═══════════ -->
+  <div class="sea-deco" aria-hidden="true">
+    <svg class="deco-jelly deco-jelly--1" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+      <path d="M 10 34 Q 10 10 32 10 Q 54 10 54 34 Q 54 40 48 40 L 16 40 Q 10 40 10 34 Z" fill="#AEE3F5"/>
+      <path d="M 16 40 Q 14 50 18 56 M 26 40 Q 24 52 28 58 M 38 40 Q 40 52 36 58 M 48 40 Q 50 50 46 56"
+            stroke="#8FD4EE" stroke-width="3.4" fill="none" stroke-linecap="round"/>
+      <ellipse cx="24" cy="18" rx="5" ry="3.5" fill="#E1F6FC" opacity=".9"/>
+    </svg>
+    <svg class="deco-jelly deco-jelly--2" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+      <path d="M 10 34 Q 10 10 32 10 Q 54 10 54 34 Q 54 40 48 40 L 16 40 Q 10 40 10 34 Z" fill="#C7E4F7"/>
+      <path d="M 16 40 Q 14 50 18 56 M 26 40 Q 24 52 28 58 M 38 40 Q 40 52 36 58 M 48 40 Q 50 50 46 56"
+            stroke="#A9D3EE" stroke-width="3.4" fill="none" stroke-linecap="round"/>
+      <ellipse cx="24" cy="18" rx="5" ry="3.5" fill="#EAF7FD" opacity=".9"/>
+    </svg>
+    <span class="deco-bubble deco-bubble--1"></span>
+    <span class="deco-bubble deco-bubble--2"></span>
+    <span class="deco-bubble deco-bubble--3"></span>
+  </div>
 
   <!-- ═══════════ オンボーディング（初回のみ） ═══════════ -->
   <section id="onboarding" class="screen hidden">
@@ -153,6 +172,6 @@
 
   <input type="file" id="photo-input" accept="image/*" multiple hidden>
 
-  <script type="module" src="js/app.js?v=20260720"></script>
+  <script type="module" src="js/app.js?v=20260720b"></script>
 </body>
 </html>
