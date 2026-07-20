@@ -7,7 +7,7 @@ import {
   addItem, updateItem, completeItem, deleteItem, reorderWishes, addPhoto,
   getProfile, saveProfile,
 } from './store.js';
-import { animalByName, ANIMALS, JAR_SVG, coverJarSVG } from './animals.js';
+import { animalByName, ANIMALS, PASTELS, JAR_SVG, coverJarSVG } from './animals.js';
 import { SYNC_ENABLED } from './config.js';
 
 const $ = (id) => document.getElementById(id);
@@ -204,6 +204,20 @@ function renderHome(remoteIds = []) {
   const soon = filtered.filter(w => w.bucket === 'soon');
   const someday = filtered.filter(w => w.bucket !== 'soon');
 
+  // 隣り合うカードが同じ色に並ばないよう、表示のときだけ色をずらす
+  // （保存データは変えないので、並び替えのたびに自然にバラける）
+  let prevColor = null;
+  const displayColor = (item) => {
+    let c = item.color;
+    if (c === prevColor) {
+      const idx = PASTELS.indexOf(c);
+      c = PASTELS[(idx + 1) % PASTELS.length];
+      if (c === prevColor) c = PASTELS[(idx + 2) % PASTELS.length];
+    }
+    prevColor = c;
+    return c;
+  };
+
   const appendSection = (key, label, sectionItems) => {
     if (sectionItems.length === 0) return;
     const sec = document.createElement('div');
@@ -234,7 +248,7 @@ function renderHome(remoteIds = []) {
     }
 
     sectionItems.forEach((item, i) => {
-      const card = buildWishCard(item, { compact: true });
+      const card = buildWishCard(item, { compact: true, color: displayColor(item) });
       if (remoteIds.includes(item.id)) card.classList.add('remote-new');
       // 段の一番上のクラゲだけ青くする
       if (i === 0) card.querySelector('.wish-star')?.classList.add('on');
@@ -279,13 +293,13 @@ function partnerName() {
   return others.sort((a, b) => (b.updatedAt ?? 0) - (a.updatedAt ?? 0))[0].owner;
 }
 
-function buildWishCard(item, { compact = false } = {}) {
+function buildWishCard(item, { compact = false, color = null } = {}) {
   const animal = animalByName(item.animal);
 
   const card = document.createElement('div');
   card.className = compact ? 'wish-card wish-card--row' : 'wish-card';
   card.dataset.id = item.id;
-  card.style.background = item.color;
+  card.style.background = color || item.color;
   card.setAttribute('role', 'listitem');
 
   // コンパクト行では動物アイコンは付けない（タイトルと名前タグだけ）

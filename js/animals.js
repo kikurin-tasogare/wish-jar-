@@ -218,6 +218,9 @@ export const PASTELS = [
   'var(--pastel-mint)',
   'var(--pastel-lavender)',
   'var(--pastel-peach)',
+  'var(--pastel-aqua)',
+  'var(--pastel-lime)',
+  'var(--pastel-plum)',
 ];
 
 export function randomAnimal() {

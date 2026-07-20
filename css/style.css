@@ -19,6 +19,9 @@
   --pastel-mint: #CFF2E8;      /* しおさい */
   --pastel-lavender: #DFE3FA;  /* しんかい */
   --pastel-peach: #FFE9D8;     /* かいがら */
+  --pastel-aqua: #C6F0E9;      /* アクアマリン */
+  --pastel-lime: #E6F6C9;      /* うみぶどう */
+  --pastel-plum: #F4DBF5;      /* さんごの花 */
   --accent: #5FBEDC;
   --accent-deep: #3FA3C6;
   --safe-top: env(safe-area-inset-top, 0px);
@@ -49,19 +52,37 @@ html, body {
 }
 .deco-jelly {
   position: absolute;
-  opacity: .5;
+  opacity: .75;
 }
 .deco-jelly--1 {
-  width: 72px;
-  left: 4%;
-  top: 16%;
+  width: 86px;
+  left: 3%;
+  top: 14%;
   animation: jelly-drift 7s ease-in-out infinite;
 }
 .deco-jelly--2 {
-  width: 48px;
-  right: 6%;
-  top: 58%;
+  width: 54px;
+  right: 5%;
+  top: 32%;
   animation: jelly-drift 9.5s ease-in-out 1.2s infinite reverse;
+}
+.deco-jelly--3 {
+  width: 66px;
+  left: 10%;
+  top: 62%;
+  animation: jelly-drift 8s ease-in-out .6s infinite;
+}
+.deco-jelly--4 {
+  width: 44px;
+  right: 12%;
+  top: 76%;
+  animation: jelly-drift 10s ease-in-out 2s infinite reverse;
+}
+.deco-jelly--5 {
+  width: 58px;
+  left: 58%;
+  top: 47%;
+  animation: jelly-drift 8.5s ease-in-out 3s infinite;
 }
 @keyframes jelly-drift {
   0%, 100% { transform: translateY(0) rotate(-4deg); }
@@ -70,13 +91,16 @@ html, body {
 .deco-bubble {
   position: absolute;
   border-radius: 50%;
-  border: 2px solid rgba(255, 255, 255, .75);
-  background: rgba(255, 255, 255, .25);
+  border: 2px solid rgba(255, 255, 255, .85);
+  background: rgba(255, 255, 255, .35);
   animation: bubble-rise 6s ease-in-out infinite;
 }
 .deco-bubble--1 { width: 14px; height: 14px; left: 18%; top: 72%; }
 .deco-bubble--2 { width: 9px; height: 9px; right: 22%; top: 34%; animation-delay: 2s; }
 .deco-bubble--3 { width: 11px; height: 11px; left: 68%; top: 84%; animation-delay: 4s; }
+.deco-bubble--4 { width: 8px; height: 8px; left: 40%; top: 22%; animation-delay: 1s; }
+.deco-bubble--5 { width: 12px; height: 12px; right: 8%; top: 56%; animation-delay: 3s; }
+.deco-bubble--6 { width: 10px; height: 10px; left: 8%; top: 42%; animation-delay: 5s; }
 @keyframes bubble-rise {
   0%, 100% { transform: translateY(0); opacity: .7; }
   50%      { transform: translateY(-26px); opacity: 1; }
