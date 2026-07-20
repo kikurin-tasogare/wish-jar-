@@ -421,7 +421,7 @@ html, body {
   -webkit-line-clamp: 1;
 }
 
-/* だれのやりたいことかを示すハート（💚=自分 / 💙=相手） */
+/* だれのやりたいことかを示すハート（💚=自分 / 🩵=相手） */
 .wish-owner {
   flex-shrink: 0;
   font-size: 15px;
