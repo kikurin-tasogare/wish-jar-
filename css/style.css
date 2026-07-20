@@ -421,20 +421,12 @@ html, body {
   -webkit-line-clamp: 1;
 }
 
+/* だれのやりたいことかを示すハート（💚=自分 / 💙=相手） */
 .wish-owner {
   flex-shrink: 0;
-  font-size: 10.5px;
-  font-weight: bold;
-  color: var(--ink);
-  padding: 4px 10px;
-  border-radius: 999px;
-  max-width: 76px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  font-size: 15px;
+  line-height: 1;
 }
-.wish-owner--mine { background: var(--pastel-mint); }
-.wish-owner--theirs { background: var(--pastel-blue); }
 
 .wish-meta {
   margin-top: 6px;

@@ -260,7 +260,7 @@ function renderOwnerFilter() {
   ].forEach(({ side, name, cls }) => {
     const btn = document.createElement('button');
     btn.className = `wish-col-name ${cls}`;
-    btn.textContent = name;
+    btn.textContent = `${side === 'mine' ? '💚' : '💙'} ${name}`;
     if (homeFilter !== 'all' && homeFilter !== side) btn.classList.add('inactive');
     btn.addEventListener('click', () => {
       homeFilter = homeFilter === side ? 'all' : side;
@@ -316,11 +316,12 @@ function buildWishCard(item, { compact = false } = {}) {
   card.appendChild(title);
 
   if (compact) {
-    // だれのやりたいことか、行の右端に小さく表示
+    // だれのやりたいことか、行の右端にハートで表示（💚=自分 / 💙=相手）
     const owner = document.createElement('span');
     const side = item.owner === profile.name ? 'mine' : 'theirs';
     owner.className = `wish-owner wish-owner--${side}`;
-    owner.textContent = item.owner;
+    owner.textContent = side === 'mine' ? '💚' : '💙';
+    owner.setAttribute('aria-label', item.owner);
     card.appendChild(owner);
   }
 
