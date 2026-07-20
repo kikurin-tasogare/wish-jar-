@@ -829,6 +829,7 @@ html, body {
   padding: 16px;
   box-shadow: var(--shadow);
   animation: card-in .4s ease both;
+  cursor: pointer;
 }
 .memory-head {
   display: flex;

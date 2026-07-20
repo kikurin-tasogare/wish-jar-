@@ -673,6 +673,8 @@ function openDetail(id) {
   const animal = animalByName(item.animal);
   $('detail-mascot').innerHTML = animal.svg;
   $('detail-delete').resetDelete?.();
+  // 叶えた思い出（status: done）は既に叶えているので「叶えて思い出にする」は出さない
+  $('detail-done').classList.toggle('hidden', item.status !== 'wish');
   openModal('detail-modal');
 }
 
@@ -865,6 +867,11 @@ function renderJarDay(dayMemories) {
     const card = document.createElement('div');
     card.className = 'memory-card';
     card.style.background = item.color;
+    card.addEventListener('click', (e) => {
+      // 動物・写真・写真追加ボタンのタップは編集画面を開かない
+      if (e.target.closest('.memory-animal, .memory-photo, .photo-add-btn')) return;
+      openDetail(item.id);
+    });
 
     const head = document.createElement('div');
     head.className = 'memory-head';
