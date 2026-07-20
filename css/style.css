@@ -284,7 +284,7 @@ html, body {
 .wish-list {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 5px;
   padding-bottom: 40px;
 }
 
@@ -361,7 +361,7 @@ html, body {
   flex-shrink: 0;
   border: none;
   background: none;
-  font-size: 17px;
+  font-size: 15px;
   line-height: 1;
   padding: 4px;
   margin: -4px 0 -4px -4px;
@@ -456,12 +456,13 @@ html, body {
   flex-direction: row;
   align-items: center;
   text-align: left;
-  padding: 13px 14px;
-  border-radius: 14px;
-  gap: 10px;
+  padding: 7px 12px;
+  border-radius: 12px;
+  gap: 8px;
 }
 .wish-card--row .wish-title {
   font-size: 13px;
+  line-height: 1.25;
   flex: 1;
   min-width: 0;
   -webkit-line-clamp: 1;
@@ -470,7 +471,7 @@ html, body {
 /* だれのやりたいことかを示すハート（💚=自分 / 🩵=相手） */
 .wish-owner {
   flex-shrink: 0;
-  font-size: 15px;
+  font-size: 13px;
   line-height: 1;
 }
 
