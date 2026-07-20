@@ -236,6 +236,27 @@ html, body {
 .text-input:focus { border-color: var(--accent); }
 .text-input--big { font-size: 18px; padding: 16px; margin-top: 8px; }
 
+.add-bulk-textarea {
+  resize: vertical;
+  min-height: 140px;
+  line-height: 1.6;
+  font-size: 15px;
+}
+
+.add-bulk-toggle {
+  display: block;
+  margin: 10px auto 0;
+  border: none;
+  background: none;
+  font-family: inherit;
+  font-size: 12.5px;
+  font-weight: bold;
+  color: var(--ink-soft);
+  text-decoration: underline;
+  cursor: pointer;
+  padding: 4px;
+}
+
 .autosave-note {
   text-align: center;
   font-size: 12px;

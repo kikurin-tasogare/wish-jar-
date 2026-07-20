@@ -477,7 +477,10 @@ function swapIfNeeded(card, pointerX, pointerY) {
 
 function setupAddModal() {
   const input = $('add-input');
+  const bulkInput = $('add-bulk-input');
+  const bulkToggle = $('add-bulk-toggle');
   const mascot = $('add-mascot');
+  let bulkMode = false;
 
   const refreshMascot = () => {
     const a = ANIMALS[Math.floor(Math.random() * ANIMALS.length)];
@@ -485,19 +488,43 @@ function setupAddModal() {
     mascot.dataset.anim = a.anim;
   };
 
+  const setBulkMode = (on) => {
+    bulkMode = on;
+    input.classList.toggle('hidden', bulkMode);
+    bulkInput.classList.toggle('hidden', !bulkMode);
+    bulkToggle.textContent = bulkMode ? '1件ずつ追加する' : '📋 まとめて追加する';
+  };
+
   $('add-btn').addEventListener('click', () => {
+    setBulkMode(false);
     refreshMascot();
     setTimeout(() => input.focus(), 350);
   });
 
+  bulkToggle.addEventListener('click', () => {
+    setBulkMode(!bulkMode);
+    (bulkMode ? bulkInput : input).focus();
+  });
+
   const submit = () => {
-    const title = input.value.trim();
-    if (!title) return;
-    addItem(title, profile.name);
-    input.value = '';
+    let count;
+    if (bulkMode) {
+      const lines = bulkInput.value.split('\n').map(s => s.trim()).filter(Boolean);
+      if (lines.length === 0) return;
+      lines.forEach(title => addItem(title.slice(0, 60), profile.name));
+      count = lines.length;
+      bulkInput.value = '';
+    } else {
+      const title = input.value.trim();
+      if (!title) return;
+      addItem(title, profile.name);
+      count = 1;
+      input.value = '';
+    }
 
     // フワッと完了演出
     const toast = $('add-toast');
+    toast.textContent = count > 1 ? `${count}件まとめて追加したよ 🎉` : '追加したよ 🎉';
     toast.classList.remove('hidden');
     toast.style.animation = 'none';
     void toast.offsetWidth;
@@ -506,7 +533,7 @@ function setupAddModal() {
     void mascot.offsetWidth;
     mascot.classList.add(mascot.dataset.anim);
     setTimeout(() => toast.classList.add('hidden'), 1400);
-    input.focus();
+    (bulkMode ? bulkInput : input).focus();
   };
 
   $('add-submit').addEventListener('click', submit);
