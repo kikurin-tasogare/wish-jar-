@@ -609,6 +609,23 @@ html, body {
 }
 .modal-title { font-size: 19px; }
 
+.modal-title-input {
+  flex: 1;
+  min-width: 0;
+  margin-right: 10px;
+  border: none;
+  background: none;
+  font-family: inherit;
+  font-size: 19px;
+  font-weight: bold;
+  color: var(--ink);
+  padding: 6px 8px;
+  border-radius: 10px;
+  outline: none;
+  transition: background-color .2s, box-shadow .2s;
+}
+.modal-title-input:focus { background-color: var(--white); box-shadow: 0 0 0 2px var(--accent); }
+
 .sheet-card {
   background: var(--bg);
   width: 100%;

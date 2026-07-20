@@ -622,7 +622,15 @@ function setupAddModal() {
 function setupDetailModal() {
   const save = () => {
     if (!detailItemId) return;
+    const titleInput = $('detail-title');
+    const title = titleInput.value.trim();
+    if (!title) {
+      // 名前を空にはできない。もとのタイトルへ戻す
+      titleInput.value = getItem(detailItemId)?.title || '';
+      return;
+    }
     updateItem(detailItemId, {
+      title,
       place: $('detail-place').value.trim(),
       date: $('detail-date').value,
       time: $('detail-time').value,
@@ -636,10 +644,13 @@ function setupDetailModal() {
     }, 1200);
   };
 
-  ['detail-place', 'detail-date', 'detail-time'].forEach(id => {
+  ['detail-title', 'detail-place', 'detail-date', 'detail-time'].forEach(id => {
     $(id).addEventListener('change', save);
   });
-  $('detail-place').addEventListener('blur', save);
+  ['detail-title', 'detail-place'].forEach(id => $(id).addEventListener('blur', save));
+  $('detail-title').addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') e.target.blur();
+  });
 
   $('detail-done').addEventListener('click', () => {
     if (!detailItemId) return;
@@ -655,7 +666,7 @@ function openDetail(id) {
   const item = getItem(id);
   if (!item) return;
   detailItemId = id;
-  $('detail-title').textContent = item.title;
+  $('detail-title').value = item.title;
   $('detail-place').value = item.place || '';
   $('detail-date').value = item.date || '';
   $('detail-time').value = item.time || '';
