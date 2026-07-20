@@ -275,9 +275,8 @@ html, body {
 
 /* ─── ふたりの列（左：自分 / 右：相手） ─── */
 .owner-filter {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
+  display: flex;
+  gap: 8px;
   margin-bottom: 14px;
 }
 .owner-filter.hidden { display: none; }
@@ -294,15 +293,16 @@ html, body {
   font-family: inherit;
   cursor: pointer;
   text-align: center;
-  font-size: 13px;
+  font-size: 12px;
   font-weight: bold;
   color: var(--ink);
-  padding: 9px 12px;
+  padding: 6px 14px;
   border-radius: 999px;
   box-shadow: var(--shadow);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  max-width: 45%;
   transition: opacity .2s ease, transform .15s ease;
 }
 .wish-col-name:active { transform: scale(0.94); }
