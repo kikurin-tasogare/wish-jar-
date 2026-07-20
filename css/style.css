@@ -391,6 +391,61 @@ html, body {
 }
 .sheet-btn:active { transform: scale(0.96); }
 
+.dup-check-btn { margin-top: 18px; }
+
+.dup-group {
+  background: var(--white);
+  border-radius: 16px;
+  padding: 12px 14px;
+  margin-bottom: 10px;
+  box-shadow: var(--shadow);
+}
+.dup-group-title {
+  font-weight: bold;
+  font-size: 14px;
+  margin-bottom: 8px;
+}
+.dup-group-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 0;
+  border-top: 1px solid #F0E4DC;
+}
+.dup-group-item:first-of-type { border-top: none; }
+.dup-item-owner {
+  font-size: 13px;
+  flex-shrink: 0;
+}
+.dup-item-meta {
+  flex: 1;
+  min-width: 0;
+  font-size: 11.5px;
+  color: var(--ink-soft);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.dup-item-delete {
+  flex-shrink: 0;
+  border: none;
+  background: var(--pastel-pink);
+  color: var(--ink);
+  font-size: 12px;
+  font-weight: bold;
+  font-family: inherit;
+  padding: 5px 10px;
+  border-radius: 999px;
+  cursor: pointer;
+}
+.dup-item-delete:active { transform: scale(0.92); }
+.dup-empty {
+  text-align: center;
+  font-size: 13px;
+  color: var(--ink-soft);
+  padding: 24px 0;
+}
+
 
 .wish-card {
   position: relative;

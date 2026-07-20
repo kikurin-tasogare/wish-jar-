@@ -188,6 +188,18 @@
       <input id="settings-jarcode" class="text-input" type="text" maxlength="30" autocomplete="off">
       <p class="field-error hidden" id="settings-jarcode-error"></p>
       <p class="autosave-note" id="sync-status"></p>
+      <button id="dup-check-btn" class="sheet-btn dup-check-btn" type="button">🔍 重複チェック</button>
+    </div>
+  </div>
+
+  <!-- ═══════════ 重複チェック ═══════════ -->
+  <div id="dup-modal" class="modal hidden" role="dialog" aria-modal="true">
+    <div class="modal-card">
+      <div class="modal-head">
+        <h2 class="modal-title">🔍 重複チェック</h2>
+        <button class="icon-btn modal-close" data-close="dup-modal" aria-label="閉じる">✕</button>
+      </div>
+      <div id="dup-list"></div>
     </div>
   </div>
 

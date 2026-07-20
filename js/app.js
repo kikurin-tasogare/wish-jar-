@@ -163,6 +163,81 @@ function setupHome() {
     $('settings-jarcode-error').classList.add('hidden');
     openModal('settings-modal');
   });
+  $('dup-check-btn').addEventListener('click', () => {
+    renderDupList();
+    openModal('dup-modal');
+  });
+}
+
+// ═══════════ 重複チェック ═══════════
+
+// 表記ゆれの単純な差（前後の空白・大小文字）だけ吸収して、
+// 同じタイトルのやりたいことをまとめる
+function normalizeTitle(title) {
+  return title.trim().replace(/\s+/g, '').toLowerCase();
+}
+
+function renderDupList() {
+  const wrap = $('dup-list');
+  wrap.textContent = '';
+
+  const groups = {};
+  getWishes().forEach(item => {
+    const key = normalizeTitle(item.title);
+    if (!key) return;
+    (groups[key] ||= []).push(item);
+  });
+  const dupGroups = Object.values(groups).filter(g => g.length > 1);
+
+  if (dupGroups.length === 0) {
+    const empty = document.createElement('p');
+    empty.className = 'dup-empty';
+    empty.textContent = '重複はなさそうだよ 🎉';
+    wrap.appendChild(empty);
+    return;
+  }
+
+  dupGroups.forEach(items => {
+    const group = document.createElement('div');
+    group.className = 'dup-group';
+
+    const title = document.createElement('div');
+    title.className = 'dup-group-title';
+    title.textContent = `「${items[0].title}」 × ${items.length}`;
+    group.appendChild(title);
+
+    items.forEach(item => {
+      const row = document.createElement('div');
+      row.className = 'dup-group-item';
+
+      const owner = document.createElement('span');
+      owner.className = 'dup-item-owner';
+      owner.textContent = item.owner === profile.name ? '💚' : '🩵';
+      row.appendChild(owner);
+
+      const meta = document.createElement('span');
+      meta.className = 'dup-item-meta';
+      const bits = [item.owner];
+      if (item.place) bits.push(`📍${item.place}`);
+      if (item.date) bits.push(`🗓${formatDateShort(item.date)}`);
+      meta.textContent = bits.join(' ・ ');
+      row.appendChild(meta);
+
+      const del = document.createElement('button');
+      del.className = 'dup-item-delete';
+      del.type = 'button';
+      del.textContent = 'けす';
+      del.addEventListener('click', () => {
+        deleteItem(item.id);
+        renderDupList();
+      });
+      row.appendChild(del);
+
+      group.appendChild(row);
+    });
+
+    wrap.appendChild(group);
+  });
 }
 
 function renderHome(remoteIds = []) {
