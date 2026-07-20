@@ -198,11 +198,11 @@ function renderHome(remoteIds = []) {
     return;
   }
 
-  // 「近いうちに」と「いつかやりたい」の2段。星つきは各段の上に固定。
+  // 「近いうちに」と「いつかやりたい」の2段。並びは order のみで決める
+  // （クラゲタップは order を最小にして一番上へ動かす）。
   // 「近いうちに」が空のあいだは、今まで通りの1本リストで見た目を変えない
-  const byStar = (a, b) => (b.starred ? 1 : 0) - (a.starred ? 1 : 0);
-  const soon = filtered.filter(w => w.bucket === 'soon').sort(byStar);
-  const someday = filtered.filter(w => w.bucket !== 'soon').sort(byStar);
+  const soon = filtered.filter(w => w.bucket === 'soon');
+  const someday = filtered.filter(w => w.bucket !== 'soon');
 
   const appendSection = (key, label, sectionItems) => {
     if (sectionItems.length === 0) return;
@@ -298,17 +298,17 @@ function buildWishCard(item, { compact = false } = {}) {
   }
 
   if (compact) {
-    // クラゲタップでピン留め（段の上に固定）。カードのタップ・長押しとは独立。
+    // クラゲタップでそのやりたいことを一番上へ。カードのタップ・長押しとは独立。
     // 青くなるのは各段の一番上のクラゲだけ（renderHome側で .on を付ける）
     const star = document.createElement('button');
     star.className = 'wish-star';
     star.textContent = '🪼';
-    star.setAttribute('aria-label', item.starred ? 'クラゲをはずす' : 'クラゲをつけて上に固定');
+    star.setAttribute('aria-label', '一番上に固定');
     star.addEventListener('pointerdown', (e) => e.stopPropagation());
     star.addEventListener('pointerup', (e) => e.stopPropagation());
     star.addEventListener('click', (e) => {
       e.stopPropagation();
-      updateItem(item.id, { starred: !item.starred });
+      pinToTop(item.id);
     });
     card.appendChild(star);
   }
@@ -340,6 +340,13 @@ function buildWishCard(item, { compact = false } = {}) {
 
   attachCardGestures(card, item, av, animal);
   return card;
+}
+
+// クラゲタップ：そのやりたいことをリストの一番上へ（order を全体の最小より小さくする）
+function pinToTop(id) {
+  const orders = getWishes().map(w => w.order ?? 0);
+  const minOrder = orders.length ? Math.min(...orders) : 0;
+  updateItem(id, { order: minOrder - 1, starred: true });
 }
 
 // ─── カードのジェスチャー ───
@@ -556,7 +563,7 @@ function setupActionSheet() {
     if (!sheetItemId) return;
     const item = getItem(sheetItemId);
     closeModal('action-sheet');
-    if (item) updateItem(item.id, { starred: !item.starred });
+    if (item) pinToTop(item.id);
   });
 
   $('sheet-bucket').addEventListener('click', () => {
@@ -613,7 +620,7 @@ function openActionSheet(id) {
   if (!item) return;
   sheetItemId = id;
   $('sheet-title').textContent = item.title;
-  $('sheet-star').textContent = item.starred ? '🪼 クラゲをはずす' : '🪼 クラゲをつけて上に固定';
+  $('sheet-star').textContent = '🪼 一番上に固定する';
   $('sheet-bucket').textContent = item.bucket === 'soon'
     ? '🐳 「いつかやりたい」にもどす'
     : '🐬 「近いうちに」へうつす';
