@@ -296,11 +296,11 @@ function buildWishCard(item, { compact = false } = {}) {
   }
 
   if (compact) {
-    // 星タップでピン留め（段の上に固定）。カードのタップ・長押しとは独立
+    // クラゲタップでピン留め（段の上に固定）。カードのタップ・長押しとは独立
     const star = document.createElement('button');
     star.className = 'wish-star' + (item.starred ? ' on' : '');
-    star.textContent = item.starred ? '⭐' : '☆';
-    star.setAttribute('aria-label', item.starred ? '星をはずす' : '星をつける');
+    star.textContent = '🪼';
+    star.setAttribute('aria-label', item.starred ? 'クラゲをはずす' : 'クラゲをつける');
     star.addEventListener('pointerdown', (e) => e.stopPropagation());
     star.addEventListener('pointerup', (e) => e.stopPropagation());
     star.addEventListener('click', (e) => {
@@ -610,7 +610,7 @@ function openActionSheet(id) {
   if (!item) return;
   sheetItemId = id;
   $('sheet-title').textContent = item.title;
-  $('sheet-star').textContent = item.starred ? '☆ 星をはずす' : '⭐ 星をつけて上に固定';
+  $('sheet-star').textContent = item.starred ? '🪼 クラゲをはずす' : '🪼 クラゲをつけて上に固定';
   $('sheet-bucket').textContent = item.bucket === 'soon'
     ? '🐳 「いつかやりたい」にもどす'
     : '🐬 「近いうちに」へうつす';
