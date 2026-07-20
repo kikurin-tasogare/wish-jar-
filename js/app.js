@@ -19,7 +19,7 @@ let photoItemId = null;    // 写真追加の対象
 let calYear, calMonth;     // カレンダー表示中の年月
 let calSelected = null;    // 選択中の日付（YYYY-MM-DD）
 let homeFilter = 'all';    // ホームの絞り込み（'all' | 'mine' | 'theirs'）
-let sectionExpanded = { soon: true, someday: true };  // セクション展開状態
+let sectionExpanded = { soon: true, someday: false };  // セクション展開状態（「いつか」は件数が多くなりがちなので初期状態は畳んでおく）
 
 // ═══════════ 起動 ═══════════
 
