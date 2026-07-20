@@ -233,9 +233,11 @@ function renderHome(remoteIds = []) {
       }
     }
 
-    sectionItems.forEach(item => {
+    sectionItems.forEach((item, i) => {
       const card = buildWishCard(item, { compact: true });
       if (remoteIds.includes(item.id)) card.classList.add('remote-new');
+      // 段の一番上のクラゲだけ青くする
+      if (i === 0) card.querySelector('.wish-star')?.classList.add('on');
       sec.appendChild(card);
     });
     listEl.appendChild(sec);
@@ -296,11 +298,12 @@ function buildWishCard(item, { compact = false } = {}) {
   }
 
   if (compact) {
-    // クラゲタップでピン留め（段の上に固定）。カードのタップ・長押しとは独立
+    // クラゲタップでピン留め（段の上に固定）。カードのタップ・長押しとは独立。
+    // 青くなるのは各段の一番上のクラゲだけ（renderHome側で .on を付ける）
     const star = document.createElement('button');
-    star.className = 'wish-star' + (item.starred ? ' on' : '');
+    star.className = 'wish-star';
     star.textContent = '🪼';
-    star.setAttribute('aria-label', item.starred ? 'クラゲをはずす' : 'クラゲをつける');
+    star.setAttribute('aria-label', item.starred ? 'クラゲをはずす' : 'クラゲをつけて上に固定');
     star.addEventListener('pointerdown', (e) => e.stopPropagation());
     star.addEventListener('pointerup', (e) => e.stopPropagation());
     star.addEventListener('click', (e) => {
