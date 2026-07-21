@@ -365,7 +365,19 @@ function renderOwnerFilter() {
 function partnerName() {
   const others = getItems().filter(i => i.owner !== profile.name);
   if (others.length === 0) return 'あいて';
-  return others.sort((a, b) => (b.updatedAt ?? 0) - (a.updatedAt ?? 0))[0].owner;
+  // 1件だけの昔のタイプミスなどに引きずられないよう、
+  // 「最後に触った1件」ではなく「一番件数が多い名前」を採用する
+  // （同数なら、より最近さわった方を優先）
+  const counts = {};
+  const lastSeen = {};
+  others.forEach(i => {
+    counts[i.owner] = (counts[i.owner] || 0) + 1;
+    lastSeen[i.owner] = Math.max(lastSeen[i.owner] || 0, i.updatedAt ?? 0);
+  });
+  return Object.keys(counts).sort((a, b) => {
+    if (counts[b] !== counts[a]) return counts[b] - counts[a];
+    return lastSeen[b] - lastSeen[a];
+  })[0];
 }
 
 function buildWishCard(item, { compact = false, color = null } = {}) {
