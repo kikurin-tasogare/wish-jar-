@@ -374,9 +374,11 @@ function renderHome(remoteIds = []) {
 function renderOwnerFilter() {
   const wrap = $('owner-filter');
   wrap.textContent = '';
-  // 前回開いてから相手が追加・編集した件数（「新着」バッジ用）
+  // 前回開いてから相手が「新しく追加した」件数（「新着」バッジ用）。
+  // updatedAtだと名前の一括修正など単なる編集でも新着扱いになってしまうため、
+  // 作成日時（createdAt）だけを見る
   const newFromPartner = getItems().filter(i =>
-    i.owner !== profile.name && (i.updatedAt ?? 0) > lastSeenTs).length;
+    i.owner !== profile.name && new Date(i.createdAt).getTime() > lastSeenTs).length;
 
   [
     { side: 'mine', name: profile.name, cls: 'wish-col-name--mine' },
