@@ -1089,7 +1089,13 @@ function setupSettings() {
 // ═══════════ モーダル共通 ═══════════
 
 function openModal(id) {
-  $(id).classList.remove('hidden');
+  const el = $(id);
+  el.classList.remove('hidden');
+  // タップでモーダルを開いた直後、同じ座標にスマホが送る「透けたクリック」が
+  // 新しく現れたボタン（叶えて思い出にする、など）を誤って押してしまうのを
+  // 構造的に防ぐため、開いた直後の一瞬だけ操作を受け付けない
+  el.style.pointerEvents = 'none';
+  setTimeout(() => { el.style.pointerEvents = ''; }, 350);
 }
 
 function closeModal(id) {
