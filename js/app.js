@@ -20,6 +20,7 @@ let calYear, calMonth;     // カレンダー表示中の年月
 let calSelected = null;    // 選択中の日付（YYYY-MM-DD）
 let homeFilter = 'all';    // ホームの絞り込み（'all' | 'mine' | 'theirs'）
 let sectionExpanded = { soon: true, someday: false };  // セクション展開状態（「いつか」は件数が多くなりがちなので初期状態は畳んでおく）
+let addedThisSession = 0;  // 追加モーダルを開いてから閉じるまでに追加した件数（閉じた時にホームでトースト表示）
 
 // ═══════════ 起動 ═══════════
 
@@ -607,6 +608,7 @@ function setupAddModal() {
   $('add-btn').addEventListener('click', () => {
     setBulkMode(false);
     refreshMascot();
+    addedThisSession = 0;
     setTimeout(() => input.focus(), 350);
   });
 
@@ -630,6 +632,7 @@ function setupAddModal() {
       count = 1;
       input.value = '';
     }
+    addedThisSession += count;
 
     // フワッと完了演出
     const toast = $('add-toast');
@@ -1058,6 +1061,22 @@ function closeModal(id) {
   $(id).classList.add('hidden');
   if (id === 'detail-modal') detailItemId = null;
   if (id === 'action-sheet') sheetItemId = null;
+  if (id === 'add-modal' && addedThisSession > 0) {
+    showHomeToast(addedThisSession > 1
+      ? `${addedThisSession}件のやりたいことを追加したよ 🎉`
+      : 'やりたいことを追加したよ 🎉');
+    addedThisSession = 0;
+  }
+}
+
+function showHomeToast(text) {
+  const toast = $('home-toast');
+  toast.textContent = text;
+  toast.classList.remove('hidden');
+  toast.style.animation = 'none';
+  void toast.offsetWidth;
+  toast.style.animation = '';
+  setTimeout(() => toast.classList.add('hidden'), 2200);
 }
 
 document.querySelectorAll('.modal-close').forEach(btn => {

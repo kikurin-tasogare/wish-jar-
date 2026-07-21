@@ -682,6 +682,31 @@ html, body {
   100% { opacity: 0; transform: translate(-50%, -75%) scale(.95); }
 }
 
+/* ホーム画面に戻ったときの追加完了トースト（追加モーダルを閉じたタイミングで表示） */
+.home-toast {
+  position: fixed;
+  left: 50%;
+  top: calc(18px + var(--safe-top));
+  transform: translateX(-50%);
+  z-index: 50;
+  background: var(--accent);
+  color: var(--white);
+  border-radius: 999px;
+  padding: 12px 22px;
+  font-weight: bold;
+  font-size: 14px;
+  box-shadow: var(--shadow-lift);
+  pointer-events: none;
+  animation: home-toast-pop 2.2s ease both;
+}
+.home-toast.hidden { display: none; }
+@keyframes home-toast-pop {
+  0% { opacity: 0; transform: translateX(-50%) translateY(-16px); }
+  12% { opacity: 1; transform: translateX(-50%) translateY(0); }
+  85% { opacity: 1; transform: translateX(-50%) translateY(0); }
+  100% { opacity: 0; transform: translateX(-50%) translateY(-10px); }
+}
+
 .detail-mascot {
   width: 74px;
   height: 74px;
