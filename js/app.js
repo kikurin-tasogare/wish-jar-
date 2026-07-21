@@ -21,12 +21,18 @@ let calSelected = null;    // 選択中の日付（YYYY-MM-DD）
 let homeFilter = 'all';    // ホームの絞り込み（'all' | 'mine' | 'theirs'）
 let sectionExpanded = { soon: true, someday: false };  // セクション展開状態（「いつか」は件数が多くなりがちなので初期状態は畳んでおく）
 let addedThisSession = 0;  // 追加モーダルを開いてから閉じるまでに追加した件数（閉じた時にホームでトースト表示）
+let lastSeenTs = 0;        // 前回アプリを開いた時刻（相手タブの「新着」バッジ判定に使う）
 
 // ═══════════ 起動 ═══════════
 
 async function main() {
   profile = getProfile();
   initStore();
+
+  // 前回開いた時刻を読み出してから、次回のためにすぐ今の時刻で上書きする
+  // （今回のセッション中はずっと「前回開いた時刻」基準でバッジを出す）
+  lastSeenTs = Number(localStorage.getItem('wishjar-last-seen') || 0);
+  localStorage.setItem('wishjar-last-seen', String(Date.now()));
 
   onChange((_, remoteIds) => {
     renderHome(remoteIds);
@@ -368,6 +374,10 @@ function renderHome(remoteIds = []) {
 function renderOwnerFilter() {
   const wrap = $('owner-filter');
   wrap.textContent = '';
+  // 前回開いてから相手が追加・編集した件数（「新着」バッジ用）
+  const newFromPartner = getItems().filter(i =>
+    i.owner !== profile.name && (i.updatedAt ?? 0) > lastSeenTs).length;
+
   [
     { side: 'mine', name: profile.name, cls: 'wish-col-name--mine' },
     { side: 'theirs', name: partnerName(), cls: 'wish-col-name--theirs' },
@@ -380,6 +390,18 @@ function renderOwnerFilter() {
       homeFilter = homeFilter === side ? 'all' : side;
       renderHome();
     });
+    if (side === 'theirs' && newFromPartner > 0) {
+      // btnはtext-overflow用にoverflow:hiddenなので、バッジは
+      // ラッパー側に載せてボタンの外枠からはみ出せるようにする
+      const holder = document.createElement('div');
+      holder.className = 'wish-col-name-wrap';
+      const badge = document.createElement('span');
+      badge.className = 'tab-badge';
+      badge.textContent = newFromPartner > 9 ? '9+' : String(newFromPartner);
+      holder.append(btn, badge);
+      wrap.appendChild(holder);
+      return;
+    }
     wrap.appendChild(btn);
   });
 }
