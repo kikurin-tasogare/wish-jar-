@@ -189,6 +189,16 @@
       <input id="settings-jarcode" class="text-input" type="text" maxlength="30" autocomplete="off">
       <p class="field-error hidden" id="settings-jarcode-error"></p>
       <p class="autosave-note" id="sync-status"></p>
+
+      <div class="settings-divider"></div>
+      <label class="field-label" for="rename-old">名前の一括修正</label>
+      <input id="rename-old" class="text-input" type="text"
+             placeholder="直したい名前（例：ゆうくん）" maxlength="10" autocomplete="off">
+      <input id="rename-new" class="text-input rename-new-input" type="text"
+             placeholder="正しい名前（例：ゆうき）" maxlength="10" autocomplete="off">
+      <button id="rename-btn" class="sheet-btn rename-btn" type="button">この名前をまとめて直す</button>
+      <p class="autosave-note hidden" id="rename-status"></p>
+
       <button id="dup-check-btn" class="sheet-btn dup-check-btn" type="button">🔍 重複チェック</button>
     </div>
   </div>

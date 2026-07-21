@@ -391,7 +391,14 @@ html, body {
 }
 .sheet-btn:active { transform: scale(0.96); }
 
-.dup-check-btn { margin-top: 18px; }
+.dup-check-btn { margin-top: 10px; }
+
+.settings-divider {
+  border-top: 1px solid #F0E4DC;
+  margin: 20px 0 4px;
+}
+.rename-new-input { margin-top: 8px; }
+.rename-btn { margin-top: 12px; }
 
 .dup-group {
   background: var(--white);

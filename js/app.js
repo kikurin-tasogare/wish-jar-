@@ -161,11 +161,33 @@ function setupHome() {
     $('settings-name').value = profile.name;
     $('settings-jarcode').value = profile.jarCode || '';
     $('settings-jarcode-error').classList.add('hidden');
+    $('rename-old').value = '';
+    $('rename-new').value = '';
+    $('rename-status').classList.add('hidden');
     openModal('settings-modal');
   });
   $('dup-check-btn').addEventListener('click', () => {
     renderDupList();
     openModal('dup-modal');
+  });
+  $('rename-btn').addEventListener('click', () => {
+    const oldName = $('rename-old').value.trim();
+    const newName = $('rename-new').value.trim();
+    const status = $('rename-status');
+    status.classList.remove('hidden');
+    if (!oldName || !newName) {
+      status.textContent = '直したい名前と正しい名前、両方入力してね';
+      return;
+    }
+    const targets = getItems().filter(i => i.owner === oldName);
+    if (targets.length === 0) {
+      status.textContent = `「${oldName}」という名前の項目は見つからなかったよ`;
+      return;
+    }
+    targets.forEach(item => updateItem(item.id, { owner: newName }));
+    status.textContent = `${targets.length}件を「${oldName}」→「${newName}」に直したよ ✓`;
+    $('rename-old').value = '';
+    $('rename-new').value = '';
   });
 }
 
