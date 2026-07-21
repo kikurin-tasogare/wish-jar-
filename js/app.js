@@ -723,6 +723,12 @@ function setupDetailModal() {
     completeWithAnimation(id);
   });
 
+  $('detail-undo').addEventListener('click', () => {
+    if (!detailItemId) return;
+    updateItem(detailItemId, { status: 'wish', doneAt: null });
+    closeModal('detail-modal');
+  });
+
   setupTwoTapDelete($('detail-delete'), () => detailItemId, () => closeModal('detail-modal'));
 }
 
@@ -737,8 +743,10 @@ function openDetail(id) {
   const animal = animalByName(item.animal);
   $('detail-mascot').innerHTML = animal.svg;
   $('detail-delete').resetDelete?.();
-  // 叶えた思い出（status: done）は既に叶えているので「叶えて思い出にする」は出さない
+  // 叶えた思い出（status: done）は既に叶えているので「叶えて思い出にする」は出さず、
+  // 代わりに「やりたいことに戻す」を出す
   $('detail-done').classList.toggle('hidden', item.status !== 'wish');
+  $('detail-undo').classList.toggle('hidden', item.status !== 'done');
   openModal('detail-modal');
 }
 
