@@ -542,7 +542,10 @@ function attachCardGestures(card, item, avatarEl, animal) {
     }
   });
 
-  const finish = () => {
+  const finish = (e) => {
+    // タップでモーダルを開いた直後、同じ座標にブラウザが送る合成クリックが
+    // 新しく現れたモーダルのボタンに透けて当たってしまうのを防ぐ
+    e?.preventDefault();
     clearTimeout(pressTimer);
     if (dragging) {
       card.style.transform = '';
