@@ -241,7 +241,7 @@ function renderDupList() {
 
       const owner = document.createElement('span');
       owner.className = 'dup-item-owner';
-      owner.textContent = item.owner === profile.name ? '💚' : '🩵';
+      owner.textContent = stableColorSide(item.owner) === 'a' ? '💚' : '🩵';
       row.appendChild(owner);
 
       const meta = document.createElement('span');
@@ -381,12 +381,13 @@ function renderOwnerFilter() {
     i.owner !== profile.name && new Date(i.createdAt).getTime() > lastSeenTs).length;
 
   [
-    { side: 'mine', name: profile.name, cls: 'wish-col-name--mine' },
-    { side: 'theirs', name: partnerName(), cls: 'wish-col-name--theirs' },
-  ].forEach(({ side, name, cls }) => {
+    { side: 'mine', name: profile.name },
+    { side: 'theirs', name: partnerName() },
+  ].forEach(({ side, name }) => {
+    const colorSide = stableColorSide(name);
     const btn = document.createElement('button');
-    btn.className = `wish-col-name ${cls}`;
-    btn.textContent = `${side === 'mine' ? '💚' : '🩵'} ${name}`;
+    btn.className = `wish-col-name wish-col-name--${colorSide}`;
+    btn.textContent = `${colorSide === 'a' ? '💚' : '🩵'} ${name}`;
     if (homeFilter !== 'all' && homeFilter !== side) btn.classList.add('inactive');
     btn.addEventListener('click', () => {
       homeFilter = homeFilter === side ? 'all' : side;
@@ -425,6 +426,14 @@ function partnerName() {
     if (counts[b] !== counts[a]) return counts[b] - counts[a];
     return lastSeen[b] - lastSeen[a];
   })[0];
+}
+
+// 名前ごとの色（緑/青）を、見ている端末に関わらずどちらの画面でも
+// 同じ人が同じ色になるよう固定する。ふたりの名前を文字コード順で
+// 比較し、若い方を'a'（緑）、もう片方を'b'（青）にする
+function stableColorSide(ownerName) {
+  const names = [profile.name, partnerName()].sort();
+  return ownerName === names[0] ? 'a' : 'b';
 }
 
 function buildWishCard(item, { compact = false, color = null } = {}) {
@@ -467,11 +476,13 @@ function buildWishCard(item, { compact = false, color = null } = {}) {
   card.appendChild(title);
 
   if (compact) {
-    // だれのやりたいことか、行の右端にハートで表示（💚=自分 / 🩵=相手）
+    // だれのやりたいことか、行の右端にハートで表示。
+    // 色は「自分/相手」ではなく名前ごとに固定（stableColorSide）なので、
+    // どちらの端末で見ても同じ人の項目は同じ色になる
     const owner = document.createElement('span');
-    const side = item.owner === profile.name ? 'mine' : 'theirs';
-    owner.className = `wish-owner wish-owner--${side}`;
-    owner.textContent = side === 'mine' ? '💚' : '🩵';
+    const colorSide = stableColorSide(item.owner);
+    owner.className = `wish-owner wish-owner--${colorSide}`;
+    owner.textContent = colorSide === 'a' ? '💚' : '🩵';
     owner.setAttribute('aria-label', item.owner);
     card.appendChild(owner);
   }

@@ -307,8 +307,9 @@ html, body {
 }
 .wish-col-name:active { transform: scale(0.94); }
 .wish-col-name.inactive { opacity: .4; }
-.wish-col-name--mine { background: var(--pastel-mint); }
-.wish-col-name--theirs { background: var(--pastel-blue); }
+/* 色は自分/相手ではなく、名前ごとに固定（stableColorSide）で決まる */
+.wish-col-name--a { background: var(--pastel-mint); }
+.wish-col-name--b { background: var(--pastel-blue); }
 
 .wish-col-name-wrap {
   position: relative;
