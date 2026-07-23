@@ -431,7 +431,13 @@ function partnerName() {
 // 名前ごとの色（緑/青）を、見ている端末に関わらずどちらの画面でも
 // 同じ人が同じ色になるよう固定する。ふたりの名前を文字コード順で
 // 比較し、若い方を'a'（緑）、もう片方を'b'（青）にする
+// ふたりの希望で「ゆうや＝緑、ゆうき＝青」に固定。
+// 万が一どちらかが名前を変えた場合など、ここに無い名前が来たら
+// 文字コード順で決定的に決める（どちらの端末でも結果が一致する）
+const FIXED_COLOR_MAP = { 'ゆうや': 'a', 'ゆうき': 'b' };
+
 function stableColorSide(ownerName) {
+  if (FIXED_COLOR_MAP[ownerName]) return FIXED_COLOR_MAP[ownerName];
   const names = [profile.name, partnerName()].sort();
   return ownerName === names[0] ? 'a' : 'b';
 }
